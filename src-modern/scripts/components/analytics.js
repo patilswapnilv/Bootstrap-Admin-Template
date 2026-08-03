@@ -1,4 +1,5 @@
 import Alpine from 'alpinejs';
+import ApexCharts from '../utils/apex.js';
 import { REALTIME_FAST_POLL_MS } from '../utils/constants.js';
 
 document.addEventListener('alpine:init', () => {

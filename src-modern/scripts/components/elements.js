@@ -246,11 +246,182 @@ document.addEventListener('alpine:init', () => {
     }));
 });
 
-// Initialize tooltips when page loads
-document.addEventListener('DOMContentLoaded', () => {
-    // Initialize Bootstrap tooltips
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-    [...tooltipTriggerList].forEach(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+// ==========================================================================
+// Showcase page behaviour (copy-to-clipboard, live demos, highlighting)
+// ==========================================================================
+//
+// These used to live in a per-page inline <script> on each elements-*.html.
+// Six of those blocks had an unbalanced-brace SyntaxError, which meant the
+// whole block was discarded by the parser and the copy buttons, the live alert
+// demo and syntax highlighting were all dead on those pages. Consolidated here
+// so there is one implementation, it is linted, and the pages carry no inline
+// JavaScript (which lets the template run under a strict CSP).
+
+const COPY_FEEDBACK_MS = 2000;
+
+/** Briefly swap a button's contents for a "Copied!" confirmation. */
+function flashCopied(button, label = 'Copied!') {
+    if (button.dataset.copyBusy === 'true') return;
+    button.dataset.copyBusy = 'true';
+
+    const originalChildren = Array.from(button.childNodes);
+    const icon = document.createElement('i');
+    icon.className = 'bi bi-check me-2';
+    button.replaceChildren(icon, document.createTextNode(label));
+    button.classList.add('btn-success');
+
+    setTimeout(() => {
+        button.replaceChildren(...originalChildren);
+        button.classList.remove('btn-success');
+        delete button.dataset.copyBusy;
+    }, COPY_FEEDBACK_MS);
+}
+
+/** Copy text, preferring the async clipboard API with a legacy fallback. */
+async function copyText(text) {
+    if (navigator.clipboard?.writeText) {
+        try {
+            await navigator.clipboard.writeText(text);
+            return true;
+        } catch {
+            // Permission denied or non-secure context — fall through.
+        }
+    }
+    // Fallback for file:// previews and older browsers.
+    const helper = document.createElement('textarea');
+    helper.value = text;
+    helper.setAttribute('readonly', '');
+    helper.style.cssText = 'position:absolute;left:-9999px;top:0;';
+    document.body.appendChild(helper);
+    helper.select();
+    let ok;
+    try {
+        ok = document.execCommand('copy');
+    } catch {
+        ok = false;
+    }
+    helper.remove();
+    return ok;
+}
+
+function codeFor(button) {
+    const block = button.closest('.element-example, .card, section') ?? button.parentElement;
+    return block?.querySelector('.element-code-block pre code') ?? null;
+}
+
+function appendAlert(message, type) {
+    const placeholder = document.getElementById('liveAlertPlaceholder');
+    if (!placeholder) return;
+
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type} alert-dismissible`;
+    alert.setAttribute('role', 'alert');
+
+    const body = document.createElement('div');
+    body.textContent = message; // textContent, not innerHTML — message is untrusted input
+    alert.appendChild(body);
+
+    const dismiss = document.createElement('button');
+    dismiss.type = 'button';
+    dismiss.className = 'btn-close';
+    dismiss.setAttribute('data-bs-dismiss', 'alert');
+    dismiss.setAttribute('aria-label', 'Close');
+    alert.appendChild(dismiss);
+
+    placeholder.appendChild(alert);
+}
+
+const ALERT_MESSAGES = {
+    primary: 'This is a primary alert message!',
+    success: 'Success! Your action was completed.',
+    warning: 'Warning! Please check your input.',
+    danger: 'Error! Something went wrong.',
+};
+
+/** One delegated listener for every showcase control on the page. */
+function handleShowcaseClick(event) {
+    const copyBtn = event.target.closest('[data-copy-code]');
+    if (copyBtn) {
+        const code = codeFor(copyBtn);
+        if (code) copyText(code.textContent).then((ok) => ok && flashCopied(copyBtn));
+        return;
+    }
+
+    const copyAllBtn = event.target.closest('[data-copy-all]');
+    if (copyAllBtn) {
+        const blocks = document.querySelectorAll('.element-code-block pre code');
+        const all = Array.from(blocks)
+            .map((b) => b.textContent)
+            .join('\n\n');
+        copyText(all).then((ok) => ok && flashCopied(copyAllBtn, 'All copied!'));
+        return;
+    }
+
+    const alertBtn = event.target.closest('[data-show-alert]');
+    if (alertBtn) {
+        const type = alertBtn.dataset.showAlert;
+        appendAlert(ALERT_MESSAGES[type] ?? 'Alert message', type);
+        return;
+    }
+
+    const faqBtn = event.target.closest('[data-faq-toggle]');
+    if (faqBtn) {
+        const answer = faqBtn.nextElementSibling;
+        const open = answer?.classList.toggle('show') ?? false;
+        faqBtn.setAttribute('aria-expanded', String(open));
+        return;
+    }
+
+    if (event.target.closest('[data-history-back]')) {
+        window.history.back();
+    }
+}
+
+/** Bootstrap's opt-in `.needs-validation` pattern, used on the forms page. */
+function initFormValidation() {
+    document.querySelectorAll('.needs-validation').forEach((form) => {
+        form.addEventListener(
+            'submit',
+            (event) => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            },
+            false
+        );
+    });
+}
+
+// main.js reaches this module through a dynamic `import()`, which usually
+// resolves *after* DOMContentLoaded has already fired — a plain
+// addEventListener('DOMContentLoaded', …) would then never run. Run now if the
+// document is already parsed, otherwise wait for it.
+function onReady(fn) {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', fn, { once: true });
+    } else {
+        fn();
+    }
+}
+
+onReady(() => {
+    // Tooltips are initialized globally by main.js `initTooltipsAndPopovers()`.
+    // This module used to re-initialize them via a `bootstrap.Tooltip` global
+    // that the bundled build never defines — it only appeared to work because
+    // the surrounding DOMContentLoaded handler never fired.
+
+    document.addEventListener('click', handleShowcaseClick);
+    initFormValidation();
+
+    // Syntax highlighting — only pulled in when the page actually has code blocks,
+    // so the showcase-only Prism bundle stays off every other page.
+    if (document.querySelector('pre code[class*="language-"]')) {
+        import('../utils/prism.js')
+            .then(({ highlightAll }) => highlightAll())
+            .catch((error) => console.error('Prism failed to load:', error));
+    }
 });
 
 export { elementsData };

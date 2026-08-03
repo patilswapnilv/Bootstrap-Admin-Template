@@ -1,4 +1,6 @@
 import Alpine from 'alpinejs';
+import Swal from 'sweetalert2';
+import ApexCharts from '../utils/apex.js';
 import { createSearchComponent } from '../utils/search-component.js';
 
 document.addEventListener('alpine:init', () => {

@@ -2,7 +2,7 @@
 // Dashboard Manager - Advanced data visualization and components
 // ==========================================================================
 
-import ApexCharts from 'apexcharts';
+import ApexCharts from '../utils/apex.js';
 import {
   REALTIME_DASHBOARD_POLL_MS,
   CHART_RESIZE_DEBOUNCE_MS,

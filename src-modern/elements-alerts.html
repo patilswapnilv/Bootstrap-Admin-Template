@@ -19,10 +19,7 @@
     <link rel="manifest" href="/manifest.json">
     
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Prism.js for syntax highlighting -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
     
     <!-- Custom syntax highlighting overrides -->
     <style>
@@ -353,10 +350,10 @@
                             <p class="text-muted mb-0">Contextual feedback messages for user actions</p>
                         </div>
                         <div class="d-flex gap-2">
-                            <button class="btn btn-outline-secondary" onclick="window.history.back()">
+                            <button class="btn btn-outline-secondary" data-history-back>
                                 <i class="bi bi-arrow-left me-2"></i>Back
                             </button>
-                            <button class="btn btn-primary" onclick="copyAllCode()">
+                            <button class="btn btn-primary" data-copy-all>
                                 <i class="bi bi-clipboard me-2"></i>Copy All
                             </button>
                         </div>
@@ -412,7 +409,7 @@
     A simple danger alert—check it out!
 &lt;/div&gt;</code></pre>
                                     </div>
-                                    <button class="btn btn-sm btn-outline-secondary" onclick="copyCode(this)">
+                                    <button class="btn btn-sm btn-outline-secondary" data-copy-code>
                                         <i class="bi bi-clipboard me-2"></i>Copy Code
                                     </button>
                                 </div>
@@ -454,7 +451,7 @@
     &lt;div&gt;An example success alert with an icon&lt;/div&gt;
 &lt;/div&gt;</code></pre>
                                     </div>
-                                    <button class="btn btn-sm btn-outline-secondary" onclick="copyCode(this)">
+                                    <button class="btn btn-sm btn-outline-secondary" data-copy-code>
                                         <i class="bi bi-clipboard me-2"></i>Copy Code
                                     </button>
                                 </div>
@@ -490,7 +487,7 @@
     &lt;button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"&gt;&lt;/button&gt;
 &lt;/div&gt;</code></pre>
                                     </div>
-                                    <button class="btn btn-sm btn-outline-secondary" onclick="copyCode(this)">
+                                    <button class="btn btn-sm btn-outline-secondary" data-copy-code>
                                         <i class="bi bi-clipboard me-2"></i>Copy Code
                                     </button>
                                 </div>
@@ -531,7 +528,7 @@
     &lt;p class="mb-0"&gt;Whenever you need to, be sure to use margin utilities.&lt;/p&gt;
 &lt;/div&gt;</code></pre>
                                     </div>
-                                    <button class="btn btn-sm btn-outline-secondary" onclick="copyCode(this)">
+                                    <button class="btn btn-sm btn-outline-secondary" data-copy-code>
                                         <i class="bi bi-clipboard me-2"></i>Copy Code
                                     </button>
                                 </div>
@@ -548,10 +545,10 @@
                                     <div class="element-preview-container">
                                         <div id="liveAlertPlaceholder"></div>
                                         <div class="d-flex gap-2">
-                                            <button type="button" class="btn btn-primary" onclick="showAlert('primary')">Show Primary Alert</button>
-                                            <button type="button" class="btn btn-success" onclick="showAlert('success')">Show Success Alert</button>
-                                            <button type="button" class="btn btn-warning" onclick="showAlert('warning')">Show Warning Alert</button>
-                                            <button type="button" class="btn btn-danger" onclick="showAlert('danger')">Show Danger Alert</button>
+                                            <button type="button" class="btn btn-primary" data-show-alert="primary">Show Primary Alert</button>
+                                            <button type="button" class="btn btn-success" data-show-alert="success">Show Success Alert</button>
+                                            <button type="button" class="btn btn-warning" data-show-alert="warning">Show Warning Alert</button>
+                                            <button type="button" class="btn btn-danger" data-show-alert="danger">Show Danger Alert</button>
                                         </div>
                                     </div>
                                     <div class="element-code-block">
@@ -567,7 +564,7 @@ const appendAlert = (message, type) => {
     alertPlaceholder.append(wrapper)
 }</code></pre>
                                     </div>
-                                    <button class="btn btn-sm btn-outline-secondary" onclick="copyCode(this)">
+                                    <button class="btn btn-sm btn-outline-secondary" data-copy-code>
                                         <i class="bi bi-clipboard me-2"></i>Copy Code
                                     </button>
                                 </div>
@@ -598,69 +595,6 @@ const appendAlert = (message, type) => {
     <!-- Scripts -->
     <script type="module" src="./scripts/main.js"></script>
     
-    <!-- Prism.js for syntax highlighting -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
     
-    <script>
-        function copyCode(button) {
-            const codeBlock = button.parentElement.querySelector('.element-code-block pre code');
-            navigator.clipboard.writeText(codeBlock.textContent).then(() => {
-                const originalText = button.innerHTML;
-                button.innerHTML = '<i class="bi bi-check me-2"></i>Copied!';
-                button.classList.add('btn-success');
-                setTimeout(() => {
-                    button.innerHTML = originalText;
-                    button.classList.remove('btn-success');
-                }, 2000);
-            });
-        }
-
-        function copyAllCode() {
-            const allCodeBlocks = document.querySelectorAll('.element-code-block pre code');
-            let allCode = '';
-            allCodeBlocks.forEach(block => {
-                allCode += block.textContent + '\n\n';
-            });
-            navigator.clipboard.writeText(allCode).then(() => {
-                alert('All code copied to clipboard!');
-            });
-        }
-
-        // Live alert functionality
-        const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
-        const appendAlert = (message, type) => {
-            const wrapper = document.createElement('div')
-            wrapper.innerHTML = [
-                `<div class="alert alert-${type} alert-dismissible" role="alert">`,
-                `   <div>${message}</div>`,
-                '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
-                '</div>'
-            ].join('')
-            alertPlaceholder.append(wrapper)
-        }
-
-        function showAlert(type) {
-            const messages = {
-                'primary': 'This is a primary alert message!',
-                'success': 'Success! Your action was completed.',
-                'warning': 'Warning! Please check your input.',
-                'danger': 'Error! Something went wrong.'
-            };
-            appendAlert(messages[type] || 'Alert message', type);
-        }
-
-        function initializeSyntaxHighlighting() {
-            // Initialize Prism.js highlighting
-            if (typeof Prism !== 'undefined') {
-                Prism.highlightAll();
-            }
-        }
-            }
-
-            // Apply syntax highlighting
-            initializeSyntaxHighlighting();
-        });
-    </script>
 </body>
 </html>

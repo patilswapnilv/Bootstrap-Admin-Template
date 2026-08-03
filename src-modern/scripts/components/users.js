@@ -1,5 +1,6 @@
 import Alpine from 'alpinejs';
-import ApexCharts from 'apexcharts';
+import { Modal } from 'bootstrap';
+import ApexCharts from '../utils/apex.js';
 import { createSearchComponent } from '../utils/search-component.js';
 
 document.addEventListener('alpine:init', () => {
@@ -751,7 +752,8 @@ document.addEventListener('alpine:init', () => {
       // Close modal and reset form
       const modal = document.querySelector('#userModal');
       if (modal) {
-        const bsModal = bootstrap.Modal.getInstance(modal);
+        // `bootstrap` is not a global in the bundled build — import the class.
+        const bsModal = Modal.getInstance(modal);
         if (bsModal) bsModal.hide();
       }
       

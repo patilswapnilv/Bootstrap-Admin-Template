@@ -105,7 +105,6 @@ export default defineConfig({
   // Optimize dependencies
   optimizeDeps: {
     include: ['bootstrap', 'alpinejs', 'apexcharts', 'sweetalert2', 'dayjs'],
-    exclude: ['lucide'], // Optional dependency, loaded dynamically
   },
 
   esbuild: {

@@ -18,9 +18,7 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json">
     
-    <!-- Preload critical fonts -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" as="style">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"></head>
+</head>
 
 <body data-page="help" class="help-page">
     <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -394,7 +392,7 @@
                                         
                                         <div class="col-md-6">
                                             <div class="video-thumbnail" @click="playVideo('intro-video')">
-                                                <img src="https://via.placeholder.com/300x180/6366f1/ffffff?text=Video+Tutorial" class="img-fluid" alt="Intro Video">
+                                                <img src="./assets/images/video-placeholder.svg" class="img-fluid" width="300" height="180" alt="Platform introduction video thumbnail">
                                                 <div class="video-play-button">
                                                     <i class="bi bi-play-fill"></i>
                                                 </div>
@@ -428,7 +426,7 @@
                                         
                                         <!-- Fallback FAQ content -->
                                         <div class="faq-item" style="display: block;">
-                                            <button class="faq-question" onclick="this.nextElementSibling.classList.toggle('show')">
+                                            <button class="faq-question" data-faq-toggle aria-expanded="false">
                                                 How do I reset my password?
                                             </button>
                                             <div class="faq-answer">
@@ -437,7 +435,7 @@
                                         </div>
                                         
                                         <div class="faq-item" style="display: block;">
-                                            <button class="faq-question" onclick="this.nextElementSibling.classList.toggle('show')">
+                                            <button class="faq-question" data-faq-toggle aria-expanded="false">
                                                 How do I add new users to the system?
                                             </button>
                                             <div class="faq-answer">
@@ -446,7 +444,7 @@
                                         </div>
                                         
                                         <div class="faq-item" style="display: block;">
-                                            <button class="faq-question" onclick="this.nextElementSibling.classList.toggle('show')">
+                                            <button class="faq-question" data-faq-toggle aria-expanded="false">
                                                 Can I export data from the dashboard?
                                             </button>
                                             <div class="faq-answer">
@@ -937,11 +935,9 @@
         </div>
     </div>
 
-    <!-- Page-specific Component -->
-    <script type="module" src="./scripts/components/help.js"></script>
     
     <!-- Vite Script -->
-    <script type="module" src="/scripts/main.js"></script>
+    <script type="module" src="./scripts/main.js"></script>
     
     <!-- Sidebar Toggle Script -->
     <script>

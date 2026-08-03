@@ -24,6 +24,14 @@ import { iconManager } from './utils/icon-manager.js';
 import Alpine from 'alpinejs';
 
 // Import styles (Bootstrap Icons are included in SCSS)
+// Inter, self-hosted. Replaces the render-blocking fonts.googleapis.com
+// stylesheet that every page used to load: one fewer third-party origin on the
+// critical path, no IP leak to a third party on first paint (a GDPR concern for
+// EU deployments), and the template renders correctly offline. The variable
+// font covers the full 100–900 range in a single file, so the weights the
+// template uses (300/400/500/600/700) all come from one request.
+import '@fontsource-variable/inter';
+
 import '../styles/scss/main.scss';
 
 // Import user components
@@ -55,12 +63,6 @@ class AdminApp {
       this.notificationManager = new NotificationManager();
       this.sidebarManager = new SidebarManager();
       this.iconManager = iconManager;
-
-      // Preload common icons for better performance
-      this.iconManager.preloadIcons([
-        'dashboard', 'users', 'analytics', 'settings', 'notifications',
-        'search', 'menu', 'check', 'warning', 'info', 'success', 'error'
-      ]);
 
       // Initialize Bootstrap components
       this.initBootstrapComponents();
@@ -490,14 +492,6 @@ class AdminApp {
     }));
 
     Alpine.data('iconDemo', () => ({
-      currentProvider: 'bootstrap',
-
-      switchProvider(provider) {
-        this.currentProvider = provider;
-        iconManager.switchProvider(provider);
-        console.log(`🎨 Switched to ${provider} icons`);
-      },
-
       getIcon(iconName) {
         return iconManager.get(iconName);
       }

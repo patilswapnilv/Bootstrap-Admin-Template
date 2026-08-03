@@ -20,11 +20,8 @@
     <link rel="icon" type="image/png" href="/assets/icons/favicon.png">
     
     <!-- Preconnect to external domains -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Title -->
     <title>Dashboard - Modern Bootstrap Admin</title>
@@ -47,9 +44,11 @@
         </div>
     </div>
 
-    <!-- Main Wrapper -->
-    <div class="admin-wrapper" id="admin-wrapper">
-        
+    <!-- Admin App Container -->
+    <div class="admin-app">
+        <!-- Main Wrapper -->
+        <div class="admin-wrapper" id="admin-wrapper">
+
         <!-- Header -->
         <header class="admin-header">
             <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
@@ -627,25 +626,16 @@
                 </div>
                 <div class="modal-body" x-data="iconDemo">
                     <div class="row mb-4">
-                        <div class="col-md-6">
-                            <h6>Current Provider: <span class="badge bg-primary" x-text="currentProvider"></span></h6>
-                            <div class="btn-group" role="group">
-                                <button type="button" 
-                                        class="btn btn-outline-primary"
-                                        @click="switchProvider('bootstrap')"
-                                        :class="{ 'active': currentProvider === 'bootstrap' }">
-                                    Bootstrap Icons
-                                </button>
-                                <button type="button" 
-                                        class="btn btn-outline-primary"
-                                        @click="switchProvider('lucide')"
-                                        :class="{ 'active': currentProvider === 'lucide' }">
-                                    Lucide Icons
-                                </button>
-                            </div>
+                        <div class="col-12">
+                            <h6 class="mb-1">Bootstrap Icons <span class="badge bg-primary">subset</span></h6>
+                            <p class="text-muted small mb-0">
+                                Icons are referenced by semantic name (<code>dashboard</code>, <code>success</code>)
+                                and resolved to Bootstrap Icons classes by the icon manager. Only the icons actually
+                                used are compiled into the CSS subset.
+                            </p>
                         </div>
                     </div>
-                    
+
                     <div class="row g-3">
                         <div class="col-md-3 text-center">
                             <div class="p-3 border rounded">
@@ -703,7 +693,7 @@
     </div>
 
     <!-- Scripts -->
-    <script type="module" src="/scripts/main.js"></script>
+    <script type="module" src="./scripts/main.js"></script>
 
     <!-- New Item Modal -->
     <div class="modal fade" id="newItemModal" tabindex="-1" aria-labelledby="newItemModalLabel" aria-hidden="true">
