@@ -5,6 +5,77 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.5.0] - 2026-08-03
+
+### Modernization pass: zero third-party runtime dependencies, patched advisories, and a real smoke test
+
+This release closes four Dependabot advisories, updates every dependency to current, and removes every third-party runtime request from the template. Along the way an automated smoke test was added — and it immediately surfaced a set of pages that had been shipping broken.
+
+### 🔒 Security
+
+- **Patched all four open advisories.** `postcss` 8.5.15 → 8.5.25 (GHSA-r28c-9q8g-f849, path traversal via `sourceMappingURL` auto-loading), `immutable` 5.1.5 → 5.1.9 via `sass` (GHSA-v56q-mh7h-f735 trie overflow, GHSA-xvcm-6775-5m9r hash-collision DoS), `brace-expansion` 5.0.6 → 5.0.9 via `eslint`/`minimatch` (GHSA-3jxr-9vmj-r5cp). `npm audit` now reports 0 vulnerabilities. Added an `overrides` block pinning the two transitive packages to patched floors so a fresh resolve can't silently regress them.
+- **Removed the unpinned, unhashed ApexCharts CDN tag** from `analytics`, `orders`, `products`, `reports` and `users`. `<script src="https://cdn.jsdelivr.net/npm/apexcharts">` (no version, no SRI) meant those pages executed whatever that URL served at page load. It also meant the chart library was downloaded **twice** — once bundled, once from the CDN — and, because the tag resolved to `latest`, the bundled copy (v5) and the CDN copy (v6) were two different major versions running on the same page.
+- **Self-hosted the Inter font**, removing `fonts.googleapis.com` / `fonts.gstatic.com` from all 21 pages. One fewer render-blocking third-party origin on the critical path, no visitor IP disclosed to a third party on first paint (a GDPR consideration for EU deployments), and the template now renders correctly offline.
+- **Self-hosted Prism** (was cdnjs, 3 requests on 7 pages) and **inlined the geo-distribution flags** (was `flagcdn.com`, 5 requests on `analytics`).
+
+The smoke test now asserts that **no page makes any external request**.
+
+### 🐛 Bug fixes
+
+These were all pre-existing and found by the new tooling, not introduced by this release.
+
+- **Six element pages were shipping a JavaScript SyntaxError.** `elements-alerts/badges/buttons/cards/forms/modals` each had an inline `<script>` whose `document.addEventListener('DOMContentLoaded', function() {` opening line had been deleted, orphaning its closing `}` and `});`. The parser discarded the entire block, so **every copy-code button, the live alert demo, and syntax highlighting were dead** on those pages. The shared logic now lives in `components/elements.js`; the pages carry no inline JavaScript at all.
+- **The entire Forms page was non-functional.** `forms.html` declares `x-data="contactForm()"`, `registrationForm()`, `fileUploadForm()` and `enhancedFormWizard()` — none of which were ever registered. `components/forms.js` instead exported a single `formsComponent` that no markup referenced, so every expression on the page threw (`formData is not defined`, `getFieldClass is not defined`, …). All four components are now implemented against the markup's actual contract: inline validation, a live password-strength meter, drag-and-drop upload with progress, and a gated 4-step wizard with draft save/restore.
+- **`Swal` was used as a global in 7 components without being imported** (`files`, `messages`, `orders`, `products`, `reports`, `settings`, `calendar`) — 19 call sites that would throw the moment a user hit a confirm or delete dialog. All now import `sweetalert2`.
+- **`bootstrap` was used as a global in 2 places** that the bundled build never defines — `elements.js` (`new bootstrap.Tooltip`) and `users.js` (`bootstrap.Modal.getInstance`). The former only appeared to work because it sat inside a `DOMContentLoaded` handler that never fired.
+- **Component `DOMContentLoaded` handlers never ran.** `main.js` reaches page components through a dynamic `import()` that usually resolves *after* `DOMContentLoaded` has already fired, so any listener registered at module scope was dead on arrival. `elements.js` now uses a `readyState` guard, matching the pattern `main.js` already used.
+- **Calendar day view threw `date.toDateString is not a function`.** `isToday()` is called with a `Date` from the grid builders but with a `YYYY-MM-DD` string from the day view; it now normalizes its input.
+- **`users.html` had no `</head>`** — the head ran straight into `<body>`.
+- **`index.html` had an unbalanced `</div>`** — it was missing the `<div class="admin-app">` wrapper that the other 20 pages have. The stray closing tag made the document unparseable by strict HTML tooling.
+- **`help.html` referenced `via.placeholder.com`**, a service that shut down in 2024, so the video thumbnail was a broken image. Replaced with a local SVG.
+
+### ⚡ Performance
+
+- **ApexCharts now uses v6's modular entry points.** `utils/apex.js` imports `apexcharts/core` plus only the six chart-type modules this template renders (area, bar, donut, radar, radialBar, treemap) and two features (toolbar, exports), instead of the barrel that pulls in boxplot, candlestick, violin, sunburst, heatmap, drilldown, storyboard, annotations and the canvas renderer. That trims the chart chunk from **229 kB to 172.8 kB gzip (−56 kB)** versus taking v6's default entry.
+- **Chart-library bytes on the 5 formerly-CDN pages dropped from ~392 kB to 172.8 kB gzip (−56%)** — those pages previously loaded 153.5 kB of bundled ApexCharts 5 *plus* a 238.6 kB jsDelivr download of ApexCharts 6.
+- **Dropped the `lucide` dependency (411 kB raw / 96 kB gzip chunk).** Its icon manager was never finished — `create()` returned an SVG containing an empty `<path>`, so the provider switcher in the icon demo rendered blank icons. Bootstrap Icons is the template's icon system; `icon-manager.js` is now a single, working provider.
+- **Removed the unused `@vitejs/plugin-legacy` devDependency** — `vite.config.js` has always had `plugins: []`.
+- Note: the dashboard page's JS grew from 226.4 kB to 244.4 kB gzip. ApexCharts 6 is genuinely larger than 5 even after modular trimming; the modular imports and the removed double-load are what keep that from being far worse.
+
+### 🔧 Developer experience
+
+- **Added `scripts/smoke-test.mjs`** — loads all 21 built pages in headless Chromium and fails on uncaught exceptions, console errors, failed requests, any external request, chart pages that render no charts, and element pages that render no highlighted code. This is what caught the SyntaxErrors and the dead Forms page. Run with `npm run test:build`.
+- **Added GitHub Actions CI** (`.github/workflows/ci.yml`): lint, build, smoke test and a separate `npm audit --audit-level=high` job, plus a weekly scheduled run so newly disclosed advisories surface without a push.
+- **Added Dependabot config** with grouped weekly npm updates and monthly Actions updates.
+- **Tightened ESLint.** The config declared `Alpine`, `ApexCharts`, `Swal` and `bootstrap` as readonly globals — but all four are ES module imports in this codebase, so the declarations only served to silence `no-undef` on genuinely undefined references. Removing them is what exposed the 21 missing-import bugs above.
+- **Added `engines`** (`node ^20.19 || ^22.13 || >=24`), **`.nvmrc`**, and `test` / `test:build` / `audit` / `verify` scripts.
+- **Removed 62 inline `onclick` handlers** across the element pages and `help.html` in favour of delegated `data-*` handlers. Only `help.html` still carries an inline `<script>`, so the template is close to running under a strict CSP.
+
+### ⬆️ Dependency updates
+
+| Package | From | To |
+| --- | --- | --- |
+| apexcharts | 5.14.0 | 6.7.0 |
+| vite | 8.0.16 | 8.2.0 |
+| eslint | 10.4.1 | 10.8.0 |
+| sass | 1.100.0 | 1.102.0 |
+| postcss | 8.5.15 | 8.5.25 |
+| prettier | 3.8.3 | 3.9.6 |
+| autoprefixer | 10.5.0 | 10.5.4 |
+| globals | 17.6.0 | 17.9.0 |
+| prismjs | (CDN 1.29.0) | 1.30.0 |
+| @fontsource-variable/inter | — | 5.3.0 |
+| lucide | 1.17.0 | *removed* |
+| @vitejs/plugin-legacy | 8.0.2 | *removed* |
+
+### ⚠️ Known follow-ups
+
+- **Sass `@import` removal is the largest remaining 2027 risk.** The build currently silences 433+ deprecation warnings via `silenceDeprecations` in `vite.config.js` — `@import` (73 uses, 0 `@use`), global built-in functions, the `if()` syntax, and `red()`/`green()`/`blue()`. All are slated for removal in Dart Sass 3.0, at which point the build stops working. Roughly 573 warnings originate in vendored Bootstrap 5.3.x source (fixed by Bootstrap 6) and ~624 in this template's own SCSS (`main.scss`, `_buttons.scss`, `_mixins.scss`). Migrating with `sass-migrator` deserves its own release.
+- **~80 files have never been Prettier-formatted.** `format:check` is wired into CI but left `continue-on-error` so it doesn't fail on day one. Run `npm run format` as a standalone commit, then remove that flag.
+- `help.html` still has one inline `<script>` containing an Alpine-v2-era fallback (`el.__x`, which Alpine 3 never sets) — worth revisiting before enabling a strict CSP.
+
+---
+
 ## [3.4.5] - 2026-05-07
 
 ### Elements showcase — preview-box follow-ups to 3.4.4

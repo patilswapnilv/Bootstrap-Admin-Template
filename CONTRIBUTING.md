@@ -78,6 +78,21 @@ npm run lint:fix     # Auto-fix linting errors
 npm run format       # Format code with Prettier
 npm run format:check # Check code formatting
 npm run check        # Run lint + format check
+npm run audit        # Fail on high/critical advisories
+npm run test:build   # Build, then smoke-test all 21 pages in a headless browser
+npm run verify       # lint + audit + test:build — run before opening a PR
+```
+
+The smoke test loads every built page in headless Chromium and fails on uncaught
+exceptions, console errors, failed or external requests, chart pages that render
+no charts, and element pages that render no highlighted code.
+
+Playwright is deliberately **not** a dependency (it would add a large install for
+everyone who just wants to build the template). Provide it yourself:
+
+```bash
+npx playwright install chromium
+PLAYWRIGHT_PATH=playwright npm run test:build
 ```
 
 ---

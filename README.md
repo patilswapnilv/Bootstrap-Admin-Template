@@ -24,10 +24,11 @@
 ### 🚀 **Advanced Technology Stack**
 - **Alpine.js 3.15.12** - Lightweight reactive framework for modern interactions
 - **ES6+ JavaScript** - Modern JavaScript with modules and async/await
-- **Vite 8.0** - Lightning-fast development and optimized production builds (rolldown-powered)
-- **SCSS Architecture** - Organized, scalable stylesheet structure with Sass 1.99
+- **Vite 8.2** - Lightning-fast development and optimized production builds (rolldown-powered)
+- **SCSS Architecture** - Organized, scalable stylesheet structure with Sass 1.102
 - **Bootstrap Icons 1.13.1** - 1,800+ icons available; build ships only the ~158 actually used
-- **ApexCharts 5.10** - Single, modern charting library used everywhere
+- **ApexCharts 6.7** - Single charting library, imported per chart type so unused chart types stay out of the bundle
+- **Zero third-party runtime requests** - fonts, charts, syntax highlighting and images are all self-hosted, so the template works offline, behind a strict CSP, and without leaking visitor IPs to a CDN
 
 ### 📊 **Comprehensive Dashboard Pages**
 - **📈 Analytics Dashboard** - Charts, KPIs, and data visualization
@@ -181,9 +182,32 @@ npm run dev:host     # Start dev server accessible on network
 npm run build        # Create optimized production build
 npm run preview      # Preview production build locally
 
+# Quality
+npm run lint         # ESLint check
+npm run format       # Format with Prettier
+npm run audit        # Fail on high/critical advisories
+npm run test:build   # Build, then load all 21 pages in a headless browser
+npm run verify       # lint + audit + test:build
+
 # Maintenance
 npm run clean        # Clean build artifacts
 ```
+
+### Smoke test
+
+`npm run test:build` loads every built page in headless Chromium and fails on
+uncaught exceptions, console errors, failed or external requests, chart pages
+that render no charts, and element pages that render no highlighted code.
+
+Playwright is intentionally **not** a dependency — it would add a large install
+for everyone who just wants to build the template. Provide it yourself:
+
+```bash
+npx playwright install chromium
+PLAYWRIGHT_PATH=playwright npm run test:build
+```
+
+CI installs it as a separate step (see `.github/workflows/ci.yml`).
 
 ## 🎨 Customization
 
@@ -228,6 +252,19 @@ document.addEventListener('alpine:init', () => {
   }));
 });
 ```
+
+## 🆕 What's New in v3.5.0
+
+### Modernization Pass (August 2026)
+
+- ✅ **Zero third-party runtime requests** - The ApexCharts CDN tag (unpinned, unhashed, and loading a *second* copy of the library alongside the bundled one), Prism from cdnjs, Google Fonts, and `flagcdn.com` images are all gone. Fonts, charts, highlighting and images are self-hosted, so the template works offline, behind a strict CSP, and without disclosing visitor IPs to a CDN. The smoke test enforces this.
+- ✅ **All security advisories patched** - `postcss` (path traversal), `immutable` (trie overflow + hash-collision DoS), `brace-expansion` (DoS). `npm audit` reports 0, with `overrides` pinning the transitive packages so a fresh resolve can't regress.
+- ✅ **Every dependency current** - ApexCharts 5 → 6 (now imported per chart type, ~56 KB gzip lighter than v6's default entry), Vite 8.2, ESLint 10.8, Sass 1.102. Dropped `lucide` (a 411 KB unfinished icon provider that rendered blank SVGs) and the unused `@vitejs/plugin-legacy`.
+- ✅ **Broken pages fixed** - Six element pages were shipping a JavaScript SyntaxError that killed their copy buttons, live demos and syntax highlighting. The entire Forms page was inert (its four Alpine components were never registered). `Swal` was used as a global in 7 components without an import — 19 crash sites. All fixed and verified in a real browser.
+- ✅ **Automated smoke test + CI** - `npm run test:build` loads all 21 built pages in headless Chromium and fails on uncaught exceptions, console errors, failed or external requests, or missing charts/highlighting. GitHub Actions runs it on every push plus weekly for fresh advisories.
+- ✅ **No inline JavaScript** - 62 inline `onclick` handlers replaced with delegated `data-*` handlers.
+
+See the [CHANGELOG](CHANGELOG.md#350---2026-08-03) for full detail, including known follow-ups.
 
 ## 🆕 What's New in v3.4.0
 

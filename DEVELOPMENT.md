@@ -24,11 +24,14 @@ Detailed documentation for developing with the Metis Bootstrap 5 Admin Template.
 
 ```bash
 npm install
-npm run dev      # Start dev server at http://localhost:3000
-npm run build    # Production build to dist-modern/
-npm run preview  # Preview production build
-npm run lint     # Run ESLint
-npm run format   # Format with Prettier
+npm run dev        # Start dev server at http://localhost:3000
+npm run build      # Production build to dist-modern/
+npm run preview    # Preview production build
+npm run lint       # Run ESLint
+npm run format     # Format with Prettier
+npm run audit      # Fail on high/critical advisories
+npm run test:build # Build, then smoke-test all 21 pages in a headless browser
+npm run verify     # lint + audit + test:build — run before shipping
 ```
 
 ## Project Structure
@@ -326,13 +329,23 @@ Swal.fire({
 
 The template uses **ApexCharts only** (Chart.js was removed in v3.4.0). ApexCharts mounts into a `<div>` — never `<canvas>`.
 
+Import from `utils/apex.js`, **not** from `'apexcharts'`. Since v3.5.0 the
+template uses ApexCharts 6's modular entry points: `utils/apex.js` pulls in
+`apexcharts/core` plus only the chart types this template renders. Importing the
+bare package instead drags in every chart type and feature (boxplot,
+candlestick, violin, sunburst, drilldown, the canvas renderer…) — roughly 56 kB
+gzip of dead weight.
+
+Rendering a chart type that isn't registered there fails silently, so adding a
+new type means adding its module to `utils/apex.js` too.
+
 ```html
 <!-- Always a div, with a min-height so the chart has space before render -->
 <div id="myChart" style="min-height: 320px;"></div>
 ```
 
 ```javascript
-import ApexCharts from 'apexcharts';
+import ApexCharts from '../utils/apex.js';
 
 const options = {
   chart: { type: 'area', height: 350, toolbar: { show: false } },
