@@ -9,12 +9,11 @@ export default [
       sourceType: 'module',
       globals: {
         ...globals.browser,
-        // Alpine.js
-        Alpine: 'readonly',
-        // External libraries
-        ApexCharts: 'readonly',
-        Swal: 'readonly',
-        bootstrap: 'readonly',
+        // Nothing else is a global. Alpine, ApexCharts, Swal and bootstrap are
+        // all ES module imports in this codebase — declaring them here told
+        // `no-undef` to stay quiet about genuinely undefined references, which
+        // is how `new bootstrap.Tooltip(...)` and bare `new ApexCharts(...)`
+        // survived on pages that never imported them.
       },
     },
     rules: {

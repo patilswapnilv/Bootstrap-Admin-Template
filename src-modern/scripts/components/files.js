@@ -1,4 +1,5 @@
 import Alpine from 'alpinejs';
+import Swal from 'sweetalert2';
 import { createSearchComponent } from '../utils/search-component.js';
 
 document.addEventListener('alpine:init', () => {

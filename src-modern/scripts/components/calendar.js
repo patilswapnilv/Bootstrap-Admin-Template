@@ -1,4 +1,5 @@
 import Alpine from 'alpinejs';
+import Swal from 'sweetalert2';
 import { Modal } from 'bootstrap';
 import { createSearchComponent } from '../utils/search-component.js';
 
@@ -347,9 +348,14 @@ document.addEventListener('alpine:init', () => {
       this.selectDate(day.date);
     },
 
+    // Called with a Date from the month/week grid builders, and with a
+    // `YYYY-MM-DD` string from the day view (`isToday(selectedDay)`), which
+    // used to throw "date.toDateString is not a function" and abort the
+    // surrounding Alpine expression. Normalize before comparing.
     isToday(date) {
-      const today = new Date();
-      return date.toDateString() === today.toDateString();
+      const value = date instanceof Date ? date : new Date(date);
+      if (Number.isNaN(value.getTime())) return false;
+      return value.toDateString() === new Date().toDateString();
     },
 
     isCurrentHour(hour) {

@@ -517,16 +517,30 @@ document.addEventListener('alpine:init', () => {
 
   Alpine.data('themeSwitch', () => ({
     currentTheme: 'light',
-    
+
     init() {
-      this.currentTheme = document.documentElement.getAttribute('data-bs-theme') || 
+      this.currentTheme = document.documentElement.getAttribute('data-bs-theme') ||
                          localStorage.getItem('theme') || 'light';
     },
-    
+
     toggle() {
       this.currentTheme = this.currentTheme === 'light' ? 'dark' : 'light';
       document.documentElement.setAttribute('data-bs-theme', this.currentTheme);
       localStorage.setItem('theme', this.currentTheme);
     }
   }));
+});
+
+// FAQ accordion. Was an inline `onclick` toggling the sibling's class; moved
+// here so the page carries no inline JavaScript and so the button reports its
+// state to assistive tech via aria-expanded.
+document.addEventListener('click', (event) => {
+  const trigger = event.target.closest('[data-faq-toggle]');
+  if (!trigger) return;
+
+  const answer = trigger.nextElementSibling;
+  if (!answer) return;
+
+  const open = answer.classList.toggle('show');
+  trigger.setAttribute('aria-expanded', String(open));
 });
