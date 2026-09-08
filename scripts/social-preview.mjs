@@ -26,9 +26,17 @@ const SERVE_DIR = path.resolve(ROOT, 'dist-modern'); // built static output
 const PAGE = '/index.html'; // dashboard page
 // ─────────────────────────────────────────────────────────────────────────
 
-const OUT = path.resolve(ROOT, 'docs', 'social-preview.png');
+// Env-overridable so the same capture serves the GitHub social preview and the
+// plain-viewport promo shots the blog listings use:
+//   OUT=…  WIDTH=…  HEIGHT=…  SCALE=…
+const OUT = process.env.OUT
+  ? path.resolve(ROOT, process.env.OUT)
+  : path.resolve(ROOT, 'docs', 'social-preview.png');
 const SCALE = Number(process.env.SCALE || 1);
-const VIEWPORT = { width: 1280, height: 640 };
+const VIEWPORT = {
+  width: Number(process.env.WIDTH || 1280),
+  height: Number(process.env.HEIGHT || 640),
+};
 
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PLAYWRIGHT_PATH || 'playwright');

@@ -29,7 +29,7 @@ By participating in this project, you agree to maintain a respectful and inclusi
 
 ### Prerequisites
 
-- **Node.js 18+** - [Download](https://nodejs.org/)
+- **Node.js 20.19+** - [Download](https://nodejs.org/)
 - **Git** - [Download](https://git-scm.com/)
 - **Code editor** - We recommend [VS Code](https://code.visualstudio.com/)
 
@@ -79,7 +79,7 @@ npm run format       # Format code with Prettier
 npm run format:check # Check code formatting
 npm run check        # Run lint + format check
 npm run audit        # Fail on high/critical advisories
-npm run test:build   # Build, then smoke-test all 21 pages in a headless browser
+npm run test:build   # Build, then smoke-test all 30 pages + the auth interaction suite
 npm run verify       # lint + audit + test:build — run before opening a PR
 ```
 

@@ -2,6 +2,10 @@
 //
 // Capture the README hero image: the dashboard rendered inside a clean
 // browser-window mockup, light theme, at retina resolution.
+//
+// The stage backdrop and window shadow are neutral zinc. They used to be a
+// lavender gradient over a purple-navy shadow, tuned to the old indigo brand —
+// which would now tint the hero a colour that appears nowhere in the template.
 // Serves the built static output over a tiny in-process HTTP server, measures
 // where the chart rows end so the frame cuts cleanly, then screenshots a
 // CSS browser frame wrapping the dashboard in an <iframe>.
@@ -25,12 +29,25 @@ const ROOT = path.resolve(__dirname, '..');
 // ── Per-repo config ──────────────────────────────────────────────────────
 const SERVE_DIR = path.resolve(ROOT, 'dist-modern'); // built static output
 const PAGE = '/index.html'; // dashboard page
-const OUT = path.resolve(ROOT, 'metis-bootstrap-admin-dashboard.png');
-const ADDRESS = 'preview.colorlib.com/theme/metis';
 // ─────────────────────────────────────────────────────────────────────────
 
+// Everything below is env-overridable so the same frame can produce the README
+// hero and the differently-proportioned promo shots the blog listings use,
+// without a second copy of the mockup markup drifting away from this one.
+//
+//   OUT=…         output path        (default: the README hero)
+//   ADDRESS=…     address-bar text
+//   CONTENT_W=…   dashboard render width in CSS px
+//   RATIO=…       target width/height; overrides the content-based cut
+//   SCALE=…       deviceScaleFactor  (default 2)
+const OUT = process.env.OUT
+  ? path.resolve(ROOT, process.env.OUT)
+  : path.resolve(ROOT, 'metis-bootstrap-admin-dashboard.png');
+const ADDRESS = process.env.ADDRESS || 'preview.colorlib.com/theme/metis';
+
 const SCALE = Number(process.env.SCALE || 2);
-const CONTENT_W = 1520; // dashboard render width (desktop layout)
+const CONTENT_W = Number(process.env.CONTENT_W || 1520); // dashboard render width
+const RATIO = process.env.RATIO ? Number(process.env.RATIO) : null;
 const STAGE_PAD = 44; // gutter around the window
 const BAR_H = 56; // browser toolbar height
 
@@ -76,11 +93,11 @@ function frameHTML(url, iframeH) {
   return `<!doctype html><html><head><meta charset="utf-8"><style>
   *{box-sizing:border-box} html,body{margin:0;padding:0}
   .stage{width:${CONTENT_W + STAGE_PAD * 2}px;height:${stageH}px;padding:${STAGE_PAD}px;
-    background:linear-gradient(135deg,#eef1fb 0%,#e7eaf7 50%,#eef2fc 100%);
+    background:linear-gradient(135deg,#eff1f4 0%,#e4e6ea 50%,#f4f5f7 100%);
     display:flex;align-items:center;justify-content:center;font-family:Inter,system-ui,-apple-system,sans-serif}
   .win{width:${CONTENT_W}px;border-radius:14px;overflow:hidden;background:#fff;
-    border:1px solid rgba(15,23,42,.06);
-    box-shadow:0 40px 80px -24px rgba(30,37,74,.40),0 16px 36px -16px rgba(30,37,74,.28)}
+    border:1px solid rgba(24,24,27,.08);
+    box-shadow:0 40px 80px -24px rgba(24,24,27,.28),0 16px 36px -16px rgba(24,24,27,.18)}
   .bar{height:${BAR_H}px;display:flex;align-items:center;gap:16px;padding:0 18px;
     background:#f4f5f8;border-bottom:1px solid #e6e8ee}
   .dots{display:flex;gap:9px}
@@ -131,13 +148,16 @@ async function main() {
   await page.waitForTimeout(1800);
 
   // Cut just into the "Recent Orders" row so a sliver of the table peeks through.
-  const iframeH = await page.evaluate(() => {
-    const heads = [...document.querySelectorAll('h1,h2,h3,h4,h5,h6')];
-    const ro = heads.find((el) => /recent orders/i.test(el.textContent || ''));
-    const card = ro ? (ro.closest('.card') || ro) : null;
-    if (card) return Math.round(card.getBoundingClientRect().top + window.scrollY + 96);
-    return 1010; // fallback: pleasant landscape
-  });
+  const iframeH = RATIO
+    // A fixed aspect ratio, for a promo slot whose crop is already decided.
+    ? Math.round((CONTENT_W + STAGE_PAD * 2) / RATIO - STAGE_PAD * 2 - BAR_H)
+    : await page.evaluate(() => {
+        const heads = [...document.querySelectorAll('h1,h2,h3,h4,h5,h6')];
+        const ro = heads.find((el) => /recent orders/i.test(el.textContent || ''));
+        const card = ro ? (ro.closest('.card') || ro) : null;
+        if (card) return Math.round(card.getBoundingClientRect().top + window.scrollY + 96);
+        return 1010; // fallback: pleasant landscape
+      });
   console.log(`→ iframe height ${iframeH}px, scale ${SCALE}x`);
 
   // ── Pass 2: render the browser-frame mockup and screenshot it ──

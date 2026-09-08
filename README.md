@@ -2,7 +2,7 @@
 
 > A completely modernized, powerful, and free Bootstrap 5 admin dashboard template built with cutting-edge web technologies.
 
-**🎉 Version 3.4.5 Release** - Patch follow-up to 3.4.4: extends the `width: 100%` fix to form inputs/selects inside the elements showcase previews (long placeholder text was truncated), and restores the form-select arrow-gap padding that was getting clobbered by a shorthand `padding` rule on the same page.
+**🎉 Version 3.6.0 Release** - Nine new auth and error pages, a rebuilt neutral design system, a validated chart palette, and every dependency current. See the [CHANGELOG](CHANGELOG.md) for the full list.
 
 ![Metis Bootstrap Admin Dashboard](./metis-bootstrap-admin-dashboard.png)
 
@@ -10,24 +10,27 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3.8-563d7c.svg)](https://getbootstrap.com)
-[![Node.js](https://img.shields.io/badge/Node.js-18%2B-green.svg)](https://nodejs.org)
+[![Node.js](https://img.shields.io/badge/Node.js-20.19%2B-green.svg)](https://nodejs.org)
 
 ## ✨ Features
 
 ### 🎨 **Modern Design System**
 - **Bootstrap 5.3.8** - Latest version with all modern utilities
 - **CSS Custom Properties** - Full theme customization support
+- **Structure from borders, not shadows** - Static panels are flat; shadows are reserved for things that genuinely float (dropdowns, modals, the mobile sidebar)
+- **One accent, used only for interaction** - Primary actions, the active nav item and focus rings. Semantic colour appears only where it means something
+- **Validated chart palette** - `scripts/utils/chart-palette.js` is the single source for every chart colour, checked for lightness band, chroma floor, colour-blind separation and contrast in both themes
 - **Dark/Light Mode** - Seamless theme switching with localStorage persistence
 - **Responsive First** - Mobile-optimized layouts across all devices
 - **Modern Typography** - Inter font family for enhanced readability
 
 ### 🚀 **Advanced Technology Stack**
-- **Alpine.js 3.15.12** - Lightweight reactive framework for modern interactions
+- **Alpine.js 3.17** - Lightweight reactive framework for modern interactions
 - **ES6+ JavaScript** - Modern JavaScript with modules and async/await
 - **Vite 8.2** - Lightning-fast development and optimized production builds (rolldown-powered)
-- **SCSS Architecture** - Organized, scalable stylesheet structure with Sass 1.102
+- **SCSS Architecture** - Organized, scalable stylesheet structure with Sass 1.104
 - **Bootstrap Icons 1.13.1** - 1,800+ icons available; build ships only the ~158 actually used
-- **ApexCharts 6.7** - Single charting library, imported per chart type so unused chart types stay out of the bundle
+- **ApexCharts 7.1** - Single charting library, imported per chart type so unused chart types stay out of the bundle
 - **Zero third-party runtime requests** - fonts, charts, syntax highlighting and images are all self-hosted, so the template works offline, behind a strict CSP, and without leaking visitor IPs to a CDN
 
 ### 📊 **Comprehensive Dashboard Pages**
@@ -42,6 +45,13 @@
 - **⚙️ Settings** - Comprehensive admin configuration
 - **🔒 Security** - User permissions and security settings
 - **❓ Help & Support** - FAQ, documentation, and support tickets
+
+### 🔐 **Auth & Error Pages**
+- **Sign in / Create account** - Inline validation, password reveal, live strength meter
+- **Forgot / Reset password** - Confirmation states that don't leak whether an account exists
+- **Two-step verification** - Six-box code entry with focus advance, paste-a-whole-code and a resend cooldown
+- **Lock screen** - Resume an existing session
+- **404 / 500 / Maintenance** - Typographic, no stock illustration, with real routes out
 
 ### 🛠️ **Developer Experience**
 - **Hot Module Replacement** - Instant development feedback
@@ -124,7 +134,7 @@ Take your project to the next level with premium dashboards from [DashboardPack]
 ## 🚀 Quick Start
 
 ### Prerequisites
-- **Node.js 18+** (recommend using [nvm](https://github.com/nvm-sh/nvm))
+- **Node.js 20.19+** (recommend using [nvm](https://github.com/nvm-sh/nvm))
 - **npm** or **yarn** package manager
 
 ### Installation
@@ -186,7 +196,7 @@ npm run preview      # Preview production build locally
 npm run lint         # ESLint check
 npm run format       # Format with Prettier
 npm run audit        # Fail on high/critical advisories
-npm run test:build   # Build, then load all 21 pages in a headless browser
+npm run test:build   # Build, load all 30 pages headless, then drive the auth flows
 npm run verify       # lint + audit + test:build
 
 # Maintenance
@@ -261,7 +271,7 @@ document.addEventListener('alpine:init', () => {
 - ✅ **All security advisories patched** - `postcss` (path traversal), `immutable` (trie overflow + hash-collision DoS), `brace-expansion` (DoS). `npm audit` reports 0, with `overrides` pinning the transitive packages so a fresh resolve can't regress.
 - ✅ **Every dependency current** - ApexCharts 5 → 6 (now imported per chart type, ~56 KB gzip lighter than v6's default entry), Vite 8.2, ESLint 10.8, Sass 1.102. Dropped `lucide` (a 411 KB unfinished icon provider that rendered blank SVGs) and the unused `@vitejs/plugin-legacy`.
 - ✅ **Broken pages fixed** - Six element pages were shipping a JavaScript SyntaxError that killed their copy buttons, live demos and syntax highlighting. The entire Forms page was inert (its four Alpine components were never registered). `Swal` was used as a global in 7 components without an import — 19 crash sites. All fixed and verified in a real browser.
-- ✅ **Automated smoke test + CI** - `npm run test:build` loads all 21 built pages in headless Chromium and fails on uncaught exceptions, console errors, failed or external requests, or missing charts/highlighting. GitHub Actions runs it on every push plus weekly for fresh advisories.
+- ✅ **Automated smoke test + CI** - `npm run test:build` loads all 30 built pages in headless Chromium and fails on uncaught exceptions, console errors, failed or external requests, or missing charts/highlighting, then drives the auth flows for real (`scripts/auth-interaction-test.mjs`). GitHub Actions runs it on every push plus weekly for fresh advisories.
 - ✅ **No inline JavaScript** - 62 inline `onclick` handlers replaced with delegated `data-*` handlers.
 
 See the [CHANGELOG](CHANGELOG.md#350---2026-08-03) for full detail, including known follow-ups.

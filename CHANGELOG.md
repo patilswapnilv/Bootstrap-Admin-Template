@@ -5,6 +5,70 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.6.0] - 2026-09-08
+
+### Nine new pages, a rebuilt design system, and a validated chart palette
+
+Metis had no sign-in page and no error pages — the one gap it had against every free competitor (AdminLTE 4, Tabler, CoreUI, Mazer, Sneat, AdminKit all ship them). `_login.scss` and `_errors.scss` had existed as empty files imported by `main.scss` since before this release, so the intent was already on record.
+
+### ✨ Added
+
+- **Six auth pages** — `login`, `register`, `forgot-password`, `reset-password`, `two-factor`, `lock-screen`. Inline validation, a password reveal toggle, a live four-segment strength meter, six-box code entry with focus advance / paste-a-whole-code / resend cooldown, and confirmation states that deliberately do not disclose whether an account exists.
+- **Three error pages** — `404`, `500`, `maintenance`. Typographic rather than illustrated: the status code is set as a display element, the copy says what actually happened, and the actions are real routes out. No stock graphic, no extra page weight.
+- **A "Pages" group in the sidebar of all 21 admin pages**, so the new pages are reachable rather than merely present.
+- **`scripts/auth.js`** — a separate entry for the nine standalone pages. They render outside the admin shell, so pulling in `main.js` (sidebar manager, notification manager, dashboard manager, Bootstrap Modal/Tab/Toast/Tooltip/Collapse) would have been dead weight on the one page an unauthenticated visitor always hits.
+- **`scripts/utils/chart-palette.js`** — one source of truth for every chart colour.
+- **`scripts/utils/password-strength.js`** — the scorer, extracted from `components/forms.js` so the auth pages and the forms showcase cannot drift apart.
+- **`scripts/generate-icon-subset.mjs`** (`npm run icons`) — regenerates the Bootstrap Icons subset by scanning source for `bi-*`. The subset was a hand-maintained generated file; adding an icon without updating it produced a class that renders nothing. Exits non-zero on a typo'd icon name. Verified against the previous hand-maintained file: byte-identical rules.
+- **`scripts/auth-interaction-test.mjs`** (`npm run test:auth`, folded into `test:build`) — drives the auth flows in a real browser. The smoke test proves a page loads; it cannot see a frozen widget. This one found two real bugs on its first run (below).
+
+### 🎨 Changed — design system
+
+The template read as generated, and the tokens were the reason. Direction is now "refined neutral": structure comes from hairline borders, the accent is an interaction signal rather than decoration, and the neutral ramp carries the UI.
+
+- **Palette.** Primary `#6366f1` (Tailwind indigo-500, the single most over-used AI-dashboard colour) → `#2563eb`. Slate → Zinc for the neutral ramp: Slate's blue cast read as "tinted grey" next to a blue accent. Semantic colours moved to consistent 600-steps.
+- **Cards are flat.** A 1px border defines the panel; the drop shadow and the `translateY(-2px)` hover lift are gone. On a dashboard where almost everything is a card, shadowing them all makes the page appear to hover off its background and the shadow stops meaning "this floats".
+- **Stat cards.** The four pastel `bg-*-subtle` icon tiles in four different hues were the strongest single "generated template" tell; they are now one recessive neutral surface. Labels became small/uppercase/tracked, values gained tabular figures so digits stay column-aligned while animating.
+- **Sidebar active state.** Was a lavender `primary-bg-subtle` pill *plus* coloured label *plus* coloured icon *plus* an accent bar — four signals for one bit of information, and a large block of decorative accent in the highest-traffic part of the UI. Now a neutral fill with full-strength ink and a 2px accent rail.
+- **Radii halved** (12–24px → 6–12px), **shadows tightened**, **header 64px → 56px**, **base font size 0.9rem → 0.875rem**, **transitions 300ms → 150ms**.
+- **Dark mode is selected, not flipped.** Panels now sit *above* the app ground. Cards were `rgba(30,41,59,0.7)`, so every card blended with whatever sat behind it and no two matched; they are opaque now. The header navbar dropped its 95%-alpha blur, which had been tinting the chrome with whatever scrolled under it.
+- **Brand mark.** The indigo→violet gradient rounded square is now a flat mark in the accent. Favicons and PWA icons regenerated to match.
+- **Recent Activity now fills its row.** The feed held three entries beside a 428px chart and left a 140px gap under it. It carries eight entries now, and the card uses a new `.card-fill-row` utility (`height: 0; min-height: 100%`) so it takes its height from the chart beside it rather than from its own content — the two columns stay level whatever the chart height becomes, and the feed scrolls past the fold with a masked bottom edge. Below `lg` the constraint lifts and every row is visible.
+
+### 📊 Changed — chart colours
+
+- **~40 hardcoded hexes across nine components now come from `chart-palette.js`.** They had drifted into two palettes: dashboard/reports/users used the Tailwind indigo set while `analytics.js` still used Bootstrap 4's `#007bff` / `#28a745` / `#fd7e14`, so the same series showed in two different blues on adjacent pages.
+- **Both categorical sequences are validated** — lightness band, chroma floor, adjacent-pair CVD separation (deutan/protan/tritan), normal-vision separation and contrast against their own surface. Light is checked against `#ffffff`, dark against the `#18181b` panel.
+- **The storage gauge was an ApexCharts demo config pasted in verbatim** — neon green `#20E647` on a navy `#293450` hollow with a drop-shadowed track and white labels, i.e. a dark-theme gauge dropped onto a white card.
+- **The treemap used three unrelated hues** (sage / olive / slate-blue) for a single measure, so bigger was not visually distinguishable from smaller. It is now one hue stepped light→dark.
+- **Chart chrome is themed in `_charts.scss`.** ApexCharts defaults its text to `#373d3f`, which is invisible on a dark panel — every dark-mode chart had unreadable axis labels.
+
+### 🐛 Fixed
+
+- **The password strength meter was frozen at zero.** `{...passwordField()}` copied the *value* of the `strength` getter rather than the getter, evaluating it once before `form` existed. Mixins are now merged with `Object.getOwnPropertyDescriptors`. Found by the new interaction test.
+- **Two-factor focus never advanced between code boxes.** `x-ref` is a static attribute and cannot be bound per-iteration, so the `x-for` loop could not hand out refs. Six explicit inputs now. Also found by the interaction test.
+- **`x-cloak` had no CSS rule anywhere in the project**, so the attribute did nothing and elements behind `x-show`/`x-if` rendered for a frame before Alpine removed them.
+- **Form inputs rendered darker than the cards they sat in.** Bootstrap defaults `$input-bg` to `--bs-body-bg`, which is the recessed app grey, so every field inside a white card read as disabled.
+- **The two asset trees had drifted.** `public-assets/assets/` and `src-modern/assets/` hold duplicates; absolute `/assets/…` references resolve to the first and relative `./assets/…` are bundled from the second. Updating only one left the new logo showing on some pages and the old indigo gradient inlined on others. Both trees are now identical — but the duplication itself remains a trap worth removing.
+- **Removed the "Application loaded successfully!" toast** that fired on all 21 pages on load. It trained users to dismiss toasts without reading them, so the ones carrying real information were ignored too.
+- **Empty generated/orphan partials put to work.** `_login.scss`, `_errors.scss`, `_charts.scss` and `_utilities.scss` were all empty files that `main.scss` imported.
+
+### ⬆️ Updated
+
+- **apexcharts** 6.7.0 → **7.1.0** (major). v7 makes nine previously bundled features opt-in (trellis, storyboard, perspectives, ink, canvas renderer, linked views, measure ruler, rewind, context menu); the template already used the modular entry points and imports none of them, so no code change was needed. The two removed APIs — `plotOptions.bar.borderRadiusWhenStacked` and the old `dataLabels.animate.enabled` default — are not used here.
+- **alpinejs** 3.15.12 → **3.17.2**
+- **sass** 1.102.0 → **1.104.0**, **vite** 8.2.0 → **8.2.2**, **eslint** 10.8.0 → **10.10.0**, **globals** 17.9.0 → **17.12.0**, **postcss** 8.5.25 → **8.5.28**, **autoprefixer** 10.5.4 → **10.5.5**
+
+### 🗑️ Removed
+
+- **The `dayjs` dependency.** Declared, pinned in `vite.config.js`'s `manualChunks` and `optimizeDeps`, watched by Dependabot — and imported by not one line of source.
+- **The `overrides` block.** The three pins (`immutable`, `brace-expansion`, `postcss`) from 3.5.0 are obsolete; the direct dependencies resolve patched versions on their own now, and the `postcss` pin was actively blocking routine updates (`npm install postcss@latest` failed with `EOVERRIDE`). `npm audit` still reports 0 vulnerabilities without them.
+
+### 📊 Bundle size
+
+- The chart chunk grew from **196 kB to 208 kB gzip (+12 kB)** on the same modular import list. ApexCharts 7's core is larger than 6's despite the smaller *default* bundle its release notes advertise — that 13.6% reduction is measured against v6's barrel entry, which this template never used. Accepted to stay on the maintained major.
+- The nine standalone pages share a single entry that carries neither ApexCharts nor the admin-shell managers.
+
 ## [3.5.0] - 2026-08-03
 
 ### Modernization pass: zero third-party runtime dependencies, patched advisories, and a real smoke test
