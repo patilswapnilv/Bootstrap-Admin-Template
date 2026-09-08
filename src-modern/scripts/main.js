@@ -86,10 +86,12 @@ class AdminApp {
       this.initAlpine();
 
       this.isInitialized = true;
-      console.log('🚀 Admin App initialized successfully');
 
-      // Show initialization complete notification
-      this.notificationManager.show('Application loaded successfully!', 'success');
+      // Deliberately no "loaded successfully" toast here. Every one of the 21
+      // pages fired a green success toast on load, which trained the user to
+      // dismiss toasts without reading them — so the ones that carry real
+      // information (a failed save, a deleted record) got ignored too. A tool
+      // should not announce its own boot.
 
     } catch (error) {
       console.error('❌ Failed to initialize Admin App:', error);

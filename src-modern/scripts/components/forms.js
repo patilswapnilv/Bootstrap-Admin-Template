@@ -11,6 +11,7 @@
 // the property and method names its bindings expect.
 
 import Alpine from 'alpinejs';
+import { scorePassword } from '../utils/password-strength.js';
 
 // ── Shared helpers ─────────────────────────────────────────────────────────
 
@@ -25,30 +26,6 @@ function notify(type, message) {
 function fieldClass(errors, touched, field) {
   if (errors[field]) return 'is-invalid';
   return touched[field] ? 'is-valid' : '';
-}
-
-/**
- * Score a password 0–100 and describe it for the strength meter. The markup
- * binds `.level` (CSS class), `.percentage` (bar width), `.text` and `.color`.
- */
-function scorePassword(password) {
-  if (!password) return { score: 0, percentage: 0, level: 'weak', text: 'Too short', color: 'muted' };
-
-  const checks = [
-    password.length >= 8,
-    password.length >= 12,
-    /[a-z]/.test(password),
-    /[A-Z]/.test(password),
-    /\d/.test(password),
-    /[^A-Za-z0-9]/.test(password),
-  ];
-  const score = checks.filter(Boolean).length;
-  const percentage = Math.round((score / checks.length) * 100);
-
-  if (score <= 2) return { score, percentage, level: 'weak', text: 'Weak', color: 'danger' };
-  if (score <= 4) return { score, percentage, level: 'fair', text: 'Fair', color: 'warning' };
-  if (score === 5) return { score, percentage, level: 'good', text: 'Good', color: 'info' };
-  return { score, percentage, level: 'strong', text: 'Strong', color: 'success' };
 }
 
 /** Human-readable file size, used by the upload list. */

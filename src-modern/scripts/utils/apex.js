@@ -2,7 +2,7 @@
 // ApexCharts — modular build
 // ==========================================================================
 //
-// ApexCharts 6 ships per-chart-type entry points instead of one barrel. The
+// ApexCharts 7 ships per-chart-type entry points instead of one barrel. The
 // barrel (`import ApexCharts from 'apexcharts'`) pulls in every chart type and
 // every optional feature — boxplot, candlestick, violin, sunburst, heatmap,
 // drilldown, storyboard, annotations, the canvas renderer… none of which this

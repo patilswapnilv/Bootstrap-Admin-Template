@@ -1,6 +1,7 @@
 import Alpine from 'alpinejs';
 import Swal from 'sweetalert2';
 import ApexCharts from '../utils/apex.js';
+import { categorical, accent, STATUS } from '../utils/chart-palette.js';
 import { createSearchComponent } from '../utils/search-component.js';
 
 document.addEventListener('alpine:init', () => {
@@ -366,12 +367,12 @@ document.addEventListener('alpine:init', () => {
 
     getCategoryColor(category) {
       const colors = {
-        electronics: '#6366f1',
-        clothing: '#8b5cf6',
-        books: '#06b6d4',
-        home: '#10b981'
+        electronics: categorical(4)[0],
+        clothing: categorical(4)[1],
+        books: categorical(4)[2],
+        home: categorical(4)[3]
       };
-      return colors[category] || '#6b7280';
+      return colors[category] || STATUS.neutral;
     },
 
     filterProducts() {
@@ -604,7 +605,7 @@ document.addEventListener('alpine:init', () => {
           width: '100%',
           toolbar: { show: false }
         },
-        colors: ['#6366f1'],
+        colors: [accent()],
         fill: {
           type: 'gradient',
           gradient: {

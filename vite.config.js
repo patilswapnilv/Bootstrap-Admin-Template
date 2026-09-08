@@ -44,6 +44,17 @@ export default defineConfig({
         security: resolve(__dirname, 'src-modern/security.html'),
         settings: resolve(__dirname, 'src-modern/settings.html'),
         users: resolve(__dirname, 'src-modern/users.html'),
+
+        // Standalone pages — rendered outside the admin shell, entry `auth.js`.
+        login: resolve(__dirname, 'src-modern/login.html'),
+        register: resolve(__dirname, 'src-modern/register.html'),
+        'forgot-password': resolve(__dirname, 'src-modern/forgot-password.html'),
+        'reset-password': resolve(__dirname, 'src-modern/reset-password.html'),
+        'two-factor': resolve(__dirname, 'src-modern/two-factor.html'),
+        'lock-screen': resolve(__dirname, 'src-modern/lock-screen.html'),
+        '404': resolve(__dirname, 'src-modern/404.html'),
+        '500': resolve(__dirname, 'src-modern/500.html'),
+        maintenance: resolve(__dirname, 'src-modern/maintenance.html'),
       },
 
       output: {
@@ -55,11 +66,7 @@ export default defineConfig({
           if (id.includes('node_modules/apexcharts/')) {
             return 'vendor-charts';
           }
-          if (
-            id.includes('node_modules/alpinejs/') ||
-            id.includes('node_modules/sweetalert2/') ||
-            id.includes('node_modules/dayjs/')
-          ) {
+          if (id.includes('node_modules/alpinejs/') || id.includes('node_modules/sweetalert2/')) {
             return 'vendor-ui';
           }
         },
@@ -104,7 +111,7 @@ export default defineConfig({
 
   // Optimize dependencies
   optimizeDeps: {
-    include: ['bootstrap', 'alpinejs', 'apexcharts', 'sweetalert2', 'dayjs'],
+    include: ['bootstrap', 'alpinejs', 'apexcharts', 'sweetalert2'],
   },
 
   esbuild: {

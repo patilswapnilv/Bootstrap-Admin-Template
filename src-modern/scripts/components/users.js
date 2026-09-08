@@ -1,6 +1,7 @@
 import Alpine from 'alpinejs';
 import { Modal } from 'bootstrap';
 import ApexCharts from '../utils/apex.js';
+import { categorical, accent, axisInk, STATUS } from '../utils/chart-palette.js';
 import { createSearchComponent } from '../utils/search-component.js';
 
 document.addEventListener('alpine:init', () => {
@@ -429,7 +430,7 @@ document.addEventListener('alpine:init', () => {
             return acc;
         }, {});
         
-        const colors = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
+        const colors = categorical(6);
         
         return Object.entries(counts).map(([name, count], index) => ({
             name,
@@ -532,7 +533,7 @@ document.addEventListener('alpine:init', () => {
                     sparkline: { enabled: true }
                 },
                 stroke: { curve: 'smooth', width: 2 },
-                colors: ['#10b981']
+                colors: [STATUS.success]
             };
             new ApexCharts(activeUserChartEl, activeUserOptions).render();
         }
@@ -569,7 +570,7 @@ document.addEventListener('alpine:init', () => {
                         }
                     }
                 }],
-                colors: ['#6366f1'],
+                colors: [accent()],
                 plotOptions: {
                     bar: {
                         borderRadius: 4,
@@ -585,7 +586,7 @@ document.addEventListener('alpine:init', () => {
                     labels: {
                         style: {
                             fontSize: '12px',
-                            colors: '#64748b'
+                            colors: axisInk()
                         }
                     }
                 },
@@ -623,7 +624,7 @@ document.addEventListener('alpine:init', () => {
                     width: '100%'
                 },
                 labels: Object.keys(roleCounts),
-                colors: ['#6366f1', '#10b981', '#f59e0b', '#ef4444'],
+                colors: categorical(4),
                 legend: { 
                     show: false
                 },

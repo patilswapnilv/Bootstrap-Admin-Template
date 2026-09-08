@@ -491,11 +491,7 @@ export default defineConfig({
           if (id.includes('node_modules/apexcharts/')) {
             return 'vendor-charts';
           }
-          if (
-            id.includes('node_modules/alpinejs/') ||
-            id.includes('node_modules/sweetalert2/') ||
-            id.includes('node_modules/dayjs/')
-          ) {
+          if (id.includes('node_modules/alpinejs/') || id.includes('node_modules/sweetalert2/')) {
             return 'vendor-ui';
           }
         }

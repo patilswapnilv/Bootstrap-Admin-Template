@@ -36,7 +36,6 @@ updates:
           - alpinejs
           - apexcharts
           - sweetalert2
-          - dayjs
           - prismjs
           - '@popperjs/core'
           - '@fontsource-variable/*'

@@ -1,25 +1,30 @@
 // ==========================================================================
-// Light Theme Styles
+// Light Theme
 // ==========================================================================
 
 [data-bs-theme="light"] {
-  --bs-body-bg: #{$gray-50};
-  --bs-body-color: #{$gray-900};
+  --bs-body-bg: var(--surface-app);
+  --bs-body-color: var(--ink-primary);
+  --bs-secondary-color: var(--ink-secondary);
+  --bs-tertiary-color: var(--ink-muted);
   --bs-border-color: #{$gray-200};
-  --bs-border-color-translucent: rgba(0, 0, 0, 0.1);
-  
-  .admin-header {
-    .navbar {
-      background-color: rgba(255, 255, 255, 0.95) !important;
-      backdrop-filter: blur(12px);
-    }
+  --bs-border-color-translucent: #{$gray-300};
+  --bs-emphasis-color: #{$gray-950};
+  --bs-secondary-bg: var(--surface-sunken);
+  --bs-tertiary-bg: var(--surface-sunken);
+
+  .admin-header .navbar {
+    // Opaque, not translucent. The blurred 95%-alpha bar was picking up whatever
+    // scrolled underneath it and tinting the whole chrome.
+    background-color: var(--surface-panel) !important;
+    backdrop-filter: none;
   }
-  
+
   .admin-sidebar {
-    background-color: white;
+    background-color: var(--surface-panel);
   }
-  
+
   .card {
-    background-color: white;
+    background-color: var(--surface-panel);
   }
 }

@@ -3,6 +3,7 @@
 // ==========================================================================
 
 import ApexCharts from '../utils/apex.js';
+import { categorical, accent, STATUS, SEQUENTIAL_BLUE, axisInk, trackFill } from '../utils/chart-palette.js';
 import {
   REALTIME_DASHBOARD_POLL_MS,
   CHART_RESIZE_DEBOUNCE_MS,
@@ -144,7 +145,7 @@ export class DashboardManager {
           formatter: value => '$' + value.toLocaleString()
         }
       },
-      colors: ['#6366f1', '#10b981'],
+      colors: categorical(2),
       stroke: { curve: 'smooth', width: 2 },
       fill: {
         type: 'gradient',
@@ -190,7 +191,7 @@ export class DashboardManager {
         categories: recent.map(item => `Day ${item.day}`),
         axisBorder: { show: false }
       },
-      colors: ['#6366f1'],
+      colors: [accent()],
       plotOptions: { bar: { borderRadius: 6, columnWidth: '55%' } },
       dataLabels: { enabled: false },
       grid: { borderColor: 'rgba(0,0,0,0.08)', strokeDashArray: 4 }
@@ -229,7 +230,8 @@ export class DashboardManager {
         this.data.orders.cancelled
       ],
       labels: ['Completed', 'Processing', 'Pending', 'Cancelled'],
-      colors: ['#10b981', '#6366f1', '#f59e0b', '#ef4444'],
+      // Reserved status colours — these four slices are states, not series.
+      colors: [STATUS.success, STATUS.info, STATUS.warning, STATUS.danger],
       legend: { position: 'bottom' },
       dataLabels: { enabled: false },
       plotOptions: { pie: { donut: { size: '60%' } } }
@@ -247,20 +249,19 @@ export class DashboardManager {
     const options = {
       chart: { height: 280, width: '100%', type: 'radialBar' },
       series: [76],
-      colors: ['#20E647'],
+      // Was an ApexCharts demo config pasted in verbatim: neon green (#20E647)
+      // on a navy hollow (#293450) with a drop-shadowed track and white labels —
+      // a dark-theme gauge dropped onto a white card, matching nothing else.
+      colors: [accent()],
       plotOptions: {
         radialBar: {
-          hollow: { margin: 0, size: '70%', background: '#293450' },
-          track: { dropShadow: { enabled: true, top: 2, left: 0, blur: 4, opacity: 0.15 } },
+          hollow: { margin: 0, size: '70%', background: 'transparent' },
+          track: { background: trackFill(), dropShadow: { enabled: false } },
           dataLabels: {
-            name: { offsetY: -10, color: '#fff', fontSize: '13px' },
-            value: { color: '#fff', fontSize: '30px', show: true }
+            name: { offsetY: -10, color: axisInk(), fontSize: '12px' },
+            value: { color: axisInk(), fontSize: '28px', fontWeight: 600, show: true }
           }
         }
-      },
-      fill: {
-        type: 'gradient',
-        gradient: { shade: 'dark', type: 'vertical', gradientToColors: ['#87D4F9'], stops: [0, 100] }
       },
       stroke: { lineCap: 'round' },
       labels: ['Used Space']
@@ -304,10 +305,13 @@ export class DashboardManager {
           shadeIntensity: 0.5,
           reverseNegativeShade: true,
           colorScale: {
+            // Magnitude, so one hue stepped light -> dark. The old ranges were
+            // three unrelated hues (sage, olive, slate-blue) for what is a single
+            // measure — a reader could not tell bigger from smaller.
             ranges: [
-              { from: 0, to: 1000, color: '#CDD7B6' },
-              { from: 1001, to: 2000, color: '#A4B494' },
-              { from: 2001, to: 3000, color: '#52708E' }
+              { from: 0, to: 1000, color: SEQUENTIAL_BLUE[1] },
+              { from: 1001, to: 2000, color: SEQUENTIAL_BLUE[3] },
+              { from: 2001, to: 3000, color: SEQUENTIAL_BLUE[5] }
             ]
           }
         }

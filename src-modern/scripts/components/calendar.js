@@ -2,6 +2,7 @@ import Alpine from 'alpinejs';
 import Swal from 'sweetalert2';
 import { Modal } from 'bootstrap';
 import { createSearchComponent } from '../utils/search-component.js';
+import { categorical } from '../utils/chart-palette.js';
 
 document.addEventListener('alpine:init', () => {
   Alpine.data('calendarComponent', () => ({
@@ -414,7 +415,7 @@ document.addEventListener('alpine:init', () => {
         event: 'var(--bs-primary)',
         meeting: 'var(--bs-success)',
         task: 'var(--bs-warning)',
-        reminder: '#8b5cf6',
+        reminder: categorical(4)[3],
         deadline: 'var(--bs-danger)'
       };
       return colors[type] || 'var(--bs-secondary)';
@@ -668,7 +669,7 @@ document.addEventListener('alpine:init', () => {
         event: 'var(--bs-primary)',
         meeting: 'var(--bs-success)',
         task: 'var(--bs-warning)',
-        reminder: '#8b5cf6',
+        reminder: categorical(4)[3],
         deadline: 'var(--bs-danger)'
       };
       return colors[type] || 'var(--bs-secondary)';

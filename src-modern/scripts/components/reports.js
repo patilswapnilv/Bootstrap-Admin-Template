@@ -1,6 +1,7 @@
 import Alpine from 'alpinejs';
 import Swal from 'sweetalert2';
 import ApexCharts from '../utils/apex.js';
+import { categorical, accent, trackFill, surfacePanel } from '../utils/chart-palette.js';
 import { createSearchComponent } from '../utils/search-component.js';
 
 document.addEventListener('alpine:init', () => {
@@ -268,7 +269,7 @@ document.addEventListener('alpine:init', () => {
               }
             }
           },
-          colors: ['#6366f1', '#10b981'],
+          colors: categorical(2),
           fill: {
             type: 'gradient',
             gradient: {
@@ -346,7 +347,7 @@ document.addEventListener('alpine:init', () => {
             width: '100%'
           },
           labels: this.topProducts.map(product => product.name),
-          colors: ['#6366f1', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b'],
+          colors: categorical(5),
           plotOptions: {
             pie: {
               donut: {
@@ -398,7 +399,7 @@ document.addEventListener('alpine:init', () => {
             width: '100%',
             stacked: true
           },
-          colors: ['#6366f1', '#e5e7eb'],
+          colors: [accent(), trackFill()],
           plotOptions: {
             bar: {
               horizontal: false,
@@ -457,7 +458,7 @@ document.addEventListener('alpine:init', () => {
             height: 250,
             width: '100%'
           },
-          colors: ['#6366f1'],
+          colors: [accent()],
           xaxis: {
             categories: ['North America', 'Europe', 'Asia', 'South America', 'Africa', 'Oceania']
           },
@@ -466,8 +467,8 @@ document.addEventListener('alpine:init', () => {
           },
           markers: {
             size: 4,
-            colors: ['#6366f1'],
-            strokeColor: '#fff',
+            colors: [accent()],
+            strokeColor: surfacePanel(),
             strokeWidth: 2
           }
         };

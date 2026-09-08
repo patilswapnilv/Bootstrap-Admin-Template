@@ -1,6 +1,7 @@
 import Alpine from 'alpinejs';
 import Swal from 'sweetalert2';
 import ApexCharts from '../utils/apex.js';
+import { categorical, STATUS } from '../utils/chart-palette.js';
 import { createSearchComponent } from '../utils/search-component.js';
 
 document.addEventListener('alpine:init', () => {
@@ -418,14 +419,16 @@ document.addEventListener('alpine:init', () => {
     },
 
     getStatusColor(status) {
+      // Order state is a status, not an identity — these come from the reserved
+      // status slots, not the categorical sequence.
       const colors = {
-        pending: '#ffc107',
-        processing: '#0d6efd',
-        shipped: '#17a2b8',
-        delivered: '#28a745',
-        cancelled: '#dc3545'
+        pending: STATUS.warning,
+        processing: STATUS.info,
+        shipped: STATUS.info,
+        delivered: STATUS.success,
+        cancelled: STATUS.danger
       };
-      return colors[status] || '#6c757d';
+      return colors[status] || STATUS.neutral;
     },
 
     filterOrders() {
@@ -673,7 +676,7 @@ document.addEventListener('alpine:init', () => {
             width: '100%',
             toolbar: { show: false }
           },
-          colors: ['#6366f1', '#10b981'],
+          colors: categorical(2),
           fill: {
             type: 'gradient',
             gradient: {

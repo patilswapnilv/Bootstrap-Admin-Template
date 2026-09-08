@@ -1,49 +1,47 @@
 // ==========================================================================
-// Dark Theme Styles
+// Dark Theme
+// ==========================================================================
+//
+// Selected, not flipped. The app ground is the darkest surface and panels sit
+// one step *above* it — the inverse of the light theme's relationship, which is
+// what makes a dark UI read as layered instead of muddy.
+//
 // ==========================================================================
 
 [data-bs-theme="dark"] {
-  --bs-body-bg: #{$gray-900};
-  --bs-body-color: #{$gray-100};
+  --bs-body-bg: var(--surface-app);
+  --bs-body-color: var(--ink-primary);
+  --bs-secondary-color: var(--ink-secondary);
+  --bs-tertiary-color: var(--ink-muted);
   --bs-border-color: #{$gray-800};
-  --bs-border-color-translucent: rgba(255, 255, 255, 0.1);
-  
-  // Custom dark theme colors
-  .admin-header {
-    .navbar {
-      background-color: rgba(15, 23, 42, 0.95) !important;
-      backdrop-filter: blur(12px);
-      border-bottom-color: var(--bs-border-color);
-    }
+  --bs-border-color-translucent: #{$gray-700};
+  --bs-emphasis-color: #{$gray-50};
+  --bs-secondary-bg: var(--surface-sunken);
+  --bs-tertiary-bg: var(--surface-sunken);
+
+  .admin-header .navbar {
+    background-color: var(--surface-panel) !important;
+    backdrop-filter: none;
+    border-bottom-color: var(--bs-border-color);
   }
-  
+
   .admin-sidebar {
-    background-color: var(--bs-body-bg);
+    background-color: var(--surface-panel);
     border-right-color: var(--bs-border-color);
   }
-  
+
   .card {
-    background-color: rgba(30, 41, 59, 0.7);
+    // Fully opaque. The old rule used rgba(30,41,59,0.7), so every card blended
+    // with whatever sat behind it and no two cards matched.
+    background-color: var(--surface-panel);
     border-color: var(--bs-border-color);
   }
-  
-  .stats-card {
-    .stats-icon {
-      &.bg-primary {
-        background-color: rgba(99, 102, 241, 0.2) !important;
-      }
-      
-      &.bg-success {
-        background-color: rgba(16, 185, 129, 0.2) !important;
-      }
-      
-      &.bg-warning {
-        background-color: rgba(245, 158, 11, 0.2) !important;
-      }
-      
-      &.bg-info {
-        background-color: rgba(6, 182, 212, 0.2) !important;
-      }
-    }
+
+  // Slightly lifted panel surface for the sunken/inset elements so they stay
+  // distinguishable against a near-black ground.
+  .stats-card .stats-icon,
+  .activity-feed .activity-icon {
+    background-color: #{$gray-800} !important;
+    color: var(--ink-secondary) !important;
   }
 }

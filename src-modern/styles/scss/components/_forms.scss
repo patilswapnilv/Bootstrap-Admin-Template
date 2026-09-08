@@ -88,6 +88,15 @@
   }
 }
 
+// Inputs sit on the panel surface, not the app background. Bootstrap defaults
+// `$input-bg` to `--bs-body-bg`, which is the recessed app grey — so every field
+// inside a white card rendered a shade darker than the card it sat on and read
+// as disabled.
+.form-control,
+.form-select {
+  background-color: var(--surface-panel);
+}
+
 // Real-time Validation Styles
 .form-control,
 .form-select {

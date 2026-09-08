@@ -1,5 +1,6 @@
 import Alpine from 'alpinejs';
 import ApexCharts from '../utils/apex.js';
+import { categorical, axisInk, gridLine, onFillInk, SEQUENTIAL_BLUE } from '../utils/chart-palette.js';
 import { REALTIME_FAST_POLL_MS } from '../utils/constants.js';
 
 document.addEventListener('alpine:init', () => {
@@ -22,10 +23,10 @@ document.addEventListener('alpine:init', () => {
     
     // Traffic sources data
     trafficSources: [
-        { name: 'Organic Search', percentage: 42.3, visitors: 19314, color: '#007bff' },
-        { name: 'Direct', percentage: 31.8, visitors: 14519, color: '#28a745' },
-        { name: 'Social Media', percentage: 16.4, visitors: 7490, color: '#fd7e14' },
-        { name: 'Referral', percentage: 9.5, visitors: 4349, color: '#e74c3c' }
+        { name: 'Organic Search', percentage: 42.3, visitors: 19314, color: categorical(3)[0] },
+        { name: 'Direct', percentage: 31.8, visitors: 14519, color: categorical(3)[1] },
+        { name: 'Social Media', percentage: 16.4, visitors: 7490, color: categorical(3)[2] },
+        { name: 'Referral', percentage: 9.5, visitors: 4349, color: categorical(4)[3] }
     ],
     
     // Top pages data
@@ -224,7 +225,7 @@ document.addEventListener('alpine:init', () => {
                 curve: 'smooth',
                 width: 2
             },
-            colors: ['#007bff', '#28a745'],
+            colors: categorical(2),
             fill: {
                 type: 'gradient',
                 gradient: {
@@ -239,7 +240,7 @@ document.addEventListener('alpine:init', () => {
                 labels: {
                     style: {
                         fontSize: '12px',
-                        colors: '#6c757d'
+                        colors: axisInk()
                     }
                 }
             },
@@ -250,12 +251,12 @@ document.addEventListener('alpine:init', () => {
                     },
                     style: {
                         fontSize: '12px',
-                        colors: '#6c757d'
+                        colors: axisInk()
                     }
                 }
             },
             grid: {
-                borderColor: '#e9ecef',
+                borderColor: gridLine(),
                 strokeDashArray: 3
             },
             legend: {
@@ -355,14 +356,15 @@ document.addEventListener('alpine:init', () => {
                     barHeight: '60%'
                 }
             },
-            colors: ['#007bff', '#0056b3', '#004085', '#003066', '#002752', '#001e3d'],
+            // One measure at varying magnitude — a single-hue ramp, darkest first.
+            colors: [...SEQUENTIAL_BLUE].reverse(),
             dataLabels: {
                 enabled: true,
                 formatter: function (val) {
                     return val.toLocaleString();
                 },
                 style: {
-                    colors: ['#fff']
+                    colors: [onFillInk()]
                 }
             },
             xaxis: {
@@ -442,7 +444,7 @@ document.addEventListener('alpine:init', () => {
                 curve: 'smooth',
                 width: 2
             },
-            colors: ['#fd7e14'],
+            colors: [categorical(3)[2]],
             markers: {
                 size: 0
             },
@@ -486,7 +488,7 @@ document.addEventListener('alpine:init', () => {
             },
             labels: ['Chrome', 'Firefox', 'Safari', 'Edge', 'Other'],
             stroke: {
-                colors: ['#fff']
+                colors: [onFillInk()]
             },
             fill: {
                 opacity: 0.85

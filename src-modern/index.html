@@ -27,7 +27,7 @@
     <title>Dashboard - Modern Bootstrap Admin</title>
     
     <!-- Theme Color -->
-    <meta name="theme-color" content="#6366f1">
+    <meta name="theme-color" content="#2563eb">
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json">
@@ -301,6 +301,71 @@
                                 <span>Files</span>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#pagesSubmenu" aria-expanded="false" aria-controls="pagesSubmenu">
+                                <i class="bi bi-file-earmark"></i>
+                                <span>Pages</span>
+                                <i class="bi bi-chevron-down ms-auto"></i>
+                            </a>
+                            <div class="collapse" id="pagesSubmenu">
+                                <ul class="nav nav-submenu">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="./login.html">
+                                            <i class="bi bi-box-arrow-in-right"></i>
+                                            <span>Sign in</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="./register.html">
+                                            <i class="bi bi-person-plus"></i>
+                                            <span>Create account</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="./forgot-password.html">
+                                            <i class="bi bi-envelope"></i>
+                                            <span>Forgot password</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="./reset-password.html">
+                                            <i class="bi bi-key"></i>
+                                            <span>Reset password</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="./two-factor.html">
+                                            <i class="bi bi-shield-lock"></i>
+                                            <span>Two-step verification</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="./lock-screen.html">
+                                            <i class="bi bi-lock"></i>
+                                            <span>Lock screen</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="./404.html">
+                                            <i class="bi bi-exclamation-circle"></i>
+                                            <span>404 not found</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="./500.html">
+                                            <i class="bi bi-exclamation-triangle"></i>
+                                            <span>500 server error</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="./maintenance.html">
+                                            <i class="bi bi-tools"></i>
+                                            <span>Maintenance</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
                         <li class="nav-item mt-3">
                             <small class="text-muted px-3 text-uppercase fw-bold">Admin</small>
                         </li>
@@ -336,7 +401,7 @@
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
                     <div>
                         <h1 class="h3 mb-0">Dashboard</h1>
-                        <p class="text-muted mb-0">Welcome back! Here's what's happening.</p>
+                        <p class="text-muted mb-0">Last 30 days &middot; updated 5 minutes ago</p>
                     </div>
                     <div class="d-flex gap-2 flex-shrink-0">
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newItemModal" aria-label="New Item">
@@ -468,37 +533,85 @@
                     </div>
 
                     <div class="col-lg-4">
-                        <div class="card">
+                        <!-- card-fill-row makes this panel take its height from the chart
+                             beside it instead of from its own content, so the two columns
+                             stay level and the feed scrolls past the fold. -->
+                        <div class="card card-fill-row">
                             <div class="card-header">
                                 <h2 class="h5 card-title mb-0">Recent Activity</h2>
                             </div>
                             <div class="card-body">
                                 <div class="activity-feed">
                                     <div class="activity-item">
-                                        <div class="activity-icon bg-primary bg-opacity-10 text-primary">
+                                        <div class="activity-icon">
                                             <i class="bi bi-person-plus"></i>
                                         </div>
                                         <div class="activity-content">
                                             <p class="mb-1">New user registered</p>
-                                            <small class="text-muted">2 minutes ago</small>
+                                            <small class="text-muted">Priya Raman &middot; Engineering &middot; 2 minutes ago</small>
                                         </div>
                                     </div>
                                     <div class="activity-item">
-                                        <div class="activity-icon bg-success bg-opacity-10 text-success">
+                                        <div class="activity-icon">
                                             <i class="bi bi-bag-check"></i>
                                         </div>
                                         <div class="activity-content">
                                             <p class="mb-1">Order #1234 completed</p>
-                                            <small class="text-muted">5 minutes ago</small>
+                                            <small class="text-muted">Shipped to Rotterdam, NL &middot; 5 minutes ago</small>
                                         </div>
                                     </div>
                                     <div class="activity-item">
-                                        <div class="activity-icon bg-warning bg-opacity-10 text-warning">
+                                        <div class="activity-icon">
+                                            <i class="bi bi-box-arrow-in-right"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <p class="mb-1">Sign-in from a new device</p>
+                                            <small class="text-muted">Jane Smith &middot; Chrome on macOS &middot; 12 minutes ago</small>
+                                        </div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon">
+                                            <i class="bi bi-file-earmark-text"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <p class="mb-1">Monthly revenue report exported</p>
+                                            <small class="text-muted">CSV &middot; 4,812 rows &middot; 24 minutes ago</small>
+                                        </div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon">
+                                            <i class="bi bi-currency-dollar"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <p class="mb-1">Payment of $2,480 received</p>
+                                            <small class="text-muted">Invoice INV-2098 settled &middot; 40 minutes ago</small>
+                                        </div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon">
                                             <i class="bi bi-exclamation-triangle"></i>
                                         </div>
                                         <div class="activity-content">
                                             <p class="mb-1">Server maintenance scheduled</p>
-                                            <small class="text-muted">1 hour ago</small>
+                                            <small class="text-muted">Sunday 02:00&ndash;02:30 UTC &middot; 1 hour ago</small>
+                                        </div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon">
+                                            <i class="bi bi-box"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <p class="mb-1">&ldquo;Aurora Headset&rdquo; back in stock</p>
+                                            <small class="text-muted">120 units received &middot; 2 hours ago</small>
+                                        </div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon">
+                                            <i class="bi bi-shield-check"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <p class="mb-1">Two-factor enabled on 3 accounts</p>
+                                            <small class="text-muted">Enforced for the Admin role &middot; 3 hours ago</small>
                                         </div>
                                     </div>
                                 </div>
