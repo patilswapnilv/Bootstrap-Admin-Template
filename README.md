@@ -226,19 +226,29 @@ CI installs it as a separate step (see `.github/workflows/ci.yml`).
 Edit `src-modern/styles/scss/abstracts/_variables.scss`:
 
 ```scss
-// Brand Colors
-$primary: #6366f1;    // Your brand primary color
-$secondary: #64748b;  // Secondary color
-$success: #10b981;    // Success state color
+// Brand colors — the accent is an interaction signal, not decoration.
+// It marks primary actions, the active nav item and focus rings; it does not
+// tint icon tiles, headings or backgrounds.
+$primary: #2563eb;    // Your brand primary color
+$secondary: #52525b;  // Zinc 600
+$success: #16a34a;    // Success state color
 
 // Typography
 $font-family-sans-serif: "Inter", system-ui, sans-serif;
-$font-size-base: 0.9rem;
+$font-size-base: 0.875rem;
 
-// Spacing & Layout
-$border-radius: 0.75rem;
-$box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+// Spacing & layout
+$border-radius: 0.5rem;
+
+// Shadows are reserved for surfaces that genuinely float — dropdowns, modals,
+// the mobile sidebar. Static cards get a 1px border instead; shadowing them all
+// makes the whole page appear to hover and the shadow stops meaning anything.
+$box-shadow: 0 1px 3px rgba(9, 9, 11, 0.06), 0 1px 2px rgba(9, 9, 11, 0.04);
 ```
+
+Changing `$primary` does not repaint the charts — chart colors are validated for
+color-blind separation and contrast, so they live in
+`src-modern/scripts/utils/chart-palette.js`. See below.
 
 ### Adding New Pages
 

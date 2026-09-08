@@ -22,38 +22,45 @@ The primary way to customize the template is through SCSS variables located in `
 #### Brand Colors
 
 ```scss
-// Primary brand color
-$primary: #6366f1;    // Indigo
+// Primary brand color — the single accent. It marks primary actions, the active
+// nav item and focus rings; it is not used to tint icon tiles or headings.
+$primary: #2563eb;    // Blue 600
 
-// Secondary colors
-$secondary: #64748b;  // Slate
-$success: #10b981;    // Emerald
-$info: #06b6d4;       // Cyan
-$warning: #f59e0b;    // Amber
-$danger: #ef4444;     // Red
-$light: #f8fafc;      // Slate 50
-$dark: #1e293b;       // Slate 800
+// Semantic colors — all 600-step, so each clears 4.5:1 on white for text and
+// stays legible as a 2px chart line.
+$secondary: #52525b;  // Zinc 600
+$success: #16a34a;    // Green 600
+$info: #0891b2;       // Cyan 600
+$warning: #d97706;    // Amber 600
+$danger: #dc2626;     // Red 600
+$light: #fafafa;      // Zinc 50
+$dark: #18181b;       // Zinc 900
 
-// Extended Color Palette
-$purple: #8b5cf6;
-$pink: #ec4899;
-$teal: #14b8a6;
-$orange: #f97316;
+// Extended palette — charts and the showcase pages only.
+$purple: #7c3aed;
+$pink: #db2777;
+$teal: #0d9488;
+$orange: #ea580c;
 ```
 
 #### Grayscale
 
+Zinc, not Slate. Slate carries a blue cast that reads as "tinted grey" next to a
+blue accent; Zinc is near-achromatic, so the accent is the only chroma on a
+default screen.
+
 ```scss
-$gray-50: #f8fafc;
-$gray-100: #f1f5f9;
-$gray-200: #e2e8f0;
-$gray-300: #cbd5e1;
-$gray-400: #94a3b8;
-$gray-500: #64748b;
-$gray-600: #475569;
-$gray-700: #334155;
-$gray-800: #1e293b;
-$gray-900: #0f172a;
+$gray-50:  #fafafa;
+$gray-100: #f4f4f5;
+$gray-200: #e4e4e7;
+$gray-300: #d4d4d8;
+$gray-400: #a1a1aa;
+$gray-500: #71717a;
+$gray-600: #52525b;
+$gray-700: #3f3f46;
+$gray-800: #27272a;
+$gray-900: #18181b;
+$gray-950: #09090b;
 ```
 
 #### Spacing
@@ -431,21 +438,30 @@ The template uses Bootstrap 5's `data-bs-theme` attribute:
 
 Override dark mode colors in `src-modern/styles/scss/themes/_dark.scss`:
 
+Dark mode is designed, not colour-flipped: the app ground is the darkest
+surface and panels sit one step *above* it, the inverse of the light theme's
+relationship. That is what keeps a dark UI reading as layered rather than muddy.
+
 ```scss
 [data-bs-theme="dark"] {
-  // Background colors
-  --bs-body-bg: #0f172a;
+  // Surfaces — panels sit above the app ground
+  --surface-app: #09090b;     // Zinc 950
+  --surface-panel: #18181b;   // Zinc 900
+  --surface-sunken: #09090b;
+  --surface-hover: #27272a;
 
-  // Card backgrounds
-  --bs-card-bg: #1e293b;
+  // Ink
+  --ink-primary: #f4f4f5;
+  --ink-secondary: #a1a1aa;
+  --ink-muted: #71717a;
 
-  // Text colors
-  --bs-body-color: #e2e8f0;
-
-  // Border colors
-  --bs-border-color: #334155;
+  // Borders carry the structure, so they matter more here than in light mode
+  --bs-border-color: #27272a;
 }
 ```
+
+Keep card backgrounds fully opaque. They were previously `rgba(30, 41, 59, 0.7)`,
+which let every card blend with whatever sat behind it so no two matched.
 
 ### Theme Toggle Implementation
 

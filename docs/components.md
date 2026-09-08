@@ -445,7 +445,7 @@ Tooltips are automatically initialized by `main.js`:
 ### ApexCharts Integration
 
 ```javascript
-import ApexCharts from 'apexcharts';
+import ApexCharts from '../utils/apex.js';
 
 const options = {
   chart: {
@@ -470,13 +470,19 @@ chart.render();
 The template ships **only ApexCharts** as of v3.4.0 — Chart.js was removed. Render a bar chart:
 
 ```javascript
-import ApexCharts from 'apexcharts';
+// Import from utils/apex.js, never from 'apexcharts' — that module registers
+// only the chart types this template renders. A type that isn't registered
+// there fails silently rather than throwing.
+import ApexCharts from '../utils/apex.js';
+import { accent } from '../utils/chart-palette.js';
 
 const options = {
   chart: { type: 'bar', height: 280, toolbar: { show: false } },
   series: [{ name: '# of Votes', data: [12, 19, 3, 5, 2, 3] }],
   xaxis: { categories: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'] },
-  colors: ['#6366f1'],
+  // Never inline a hex: the palette is validated for color-blind separation
+  // and contrast, per theme. Use accent(), categorical(n) or STATUS.*.
+  colors: [accent()],
   plotOptions: { bar: { borderRadius: 6, columnWidth: '55%' } },
   dataLabels: { enabled: false }
 };

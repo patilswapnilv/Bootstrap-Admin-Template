@@ -346,17 +346,24 @@ new type means adding its module to `utils/apex.js` too.
 
 ```javascript
 import ApexCharts from '../utils/apex.js';
+import { accent } from '../utils/chart-palette.js';
 
 const options = {
   chart: { type: 'area', height: 350, toolbar: { show: false } },
   series: [{ name: 'Revenue', data: [31, 40, 28, 51, 42, 109, 100] }],
   xaxis: { categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
-  colors: ['#6366f1']
+  colors: [accent()]
 };
 
 const chart = new ApexCharts(document.querySelector('#myChart'), options);
 chart.render();
 ```
+
+**Never inline a hex here.** Use `accent()` for a single series, `categorical(n)`
+for several, and `STATUS.*` for states. Those sequences are validated for
+lightness band, chroma floor, color-blind separation and contrast against their
+own surface, per theme — a hand-picked substitute silently breaks that, and the
+same series ends up a different color on the next page.
 
 **Cleanup:** track chart instances in your component and call `chart.destroy()` when the host unmounts (or in a `pagehide` handler) so SVG nodes and event listeners don't leak. The `DashboardManager` and `analytics` Alpine component both follow this pattern — copy from there when adding a new chart-heavy page.
 
@@ -536,21 +543,25 @@ These responsive adjustments are defined in `components/_cards.scss` and `compon
 Located in `src-modern/styles/scss/abstracts/_variables.scss`:
 
 ```scss
-// Brand Colors
-$primary: #6366f1;
-$secondary: #64748b;
-$success: #10b981;
-$warning: #f59e0b;
-$danger: #ef4444;
-$info: #3b82f6;
+// Brand colors — all 600-step: dark enough to clear 4.5:1 on white, saturated
+// enough to stay legible as a 2px chart line.
+$primary: #2563eb;
+$secondary: #52525b;
+$success: #16a34a;
+$warning: #d97706;
+$danger: #dc2626;
+$info: #0891b2;
+
+// Neutral ramp is Zinc, not Slate: Slate's blue cast reads as "tinted grey"
+// next to a blue accent, which is what made the old palette feel synthetic.
 
 // Typography
 $font-family-sans-serif: "Inter", system-ui, sans-serif;
-$font-size-base: 0.9rem;
+$font-size-base: 0.875rem;
 
-// Spacing & Layout
-$border-radius: 0.75rem;
-$box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+// Spacing & layout
+$border-radius: 0.5rem;
+$box-shadow: 0 1px 3px rgba(9, 9, 11, 0.06), 0 1px 2px rgba(9, 9, 11, 0.04);
 ```
 
 ### Theme Support
